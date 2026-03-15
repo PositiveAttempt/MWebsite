@@ -5,6 +5,9 @@ discussions about how I suck at maths and essentially for me to
 learn I just need to know if before my brain even assesses wether its right or not.
 juries still out to wether it makes me less shit at maths.
 
+The goal is to make actually being able to recall times tables, for the brain,
+the path of least resistance.
+
 or not i might try to update it or get claude to update it
 later.
 
