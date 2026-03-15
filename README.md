@@ -9,7 +9,7 @@ or not i might try to update it or get claude to update it
 later.
 
 includes a 'moron checker' that flashes up a times table with alpha in front of your face for
-for the specified amount of time.
+for the specified amount of time. Or if you get a question wrong.
 
 
 
