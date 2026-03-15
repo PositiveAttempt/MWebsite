@@ -331,6 +331,27 @@
                 border-color: #1a1916;
             }
 
+        .done-history {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .done-history-label {
+            font-family: 'EB Garamond', serif;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            color: #c8c4bc;
+            margin-bottom: 6px;
+        }
+
+        .done-history-row {
+            font-size: 13px;
+            color: #aaa69e;
+            font-style: italic;
+            margin: 2px 0;
+        }
+
         /* ── MORON CHECKER ── */
         .mc-overlay {
             display: none;
@@ -671,6 +692,15 @@
         <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
     </div>
 
+    <div class="settings-row" style="margin-bottom:.5rem">
+        <label>Session</label>
+        <span id="sess-full" onclick="setSessionSize(0)" style="cursor:pointer;min-width:auto;text-align:left;color:#1a1916;font-weight:600">Full</span>
+        <span style="color:#c8c4bc;min-width:auto">·</span>
+        <span id="sess-25" onclick="setSessionSize(25)" style="cursor:pointer;min-width:auto;text-align:left">25</span>
+        <span style="color:#c8c4bc;min-width:auto">·</span>
+        <span id="sess-50" onclick="setSessionSize(50)" style="cursor:pointer;min-width:auto;text-align:left">50</span>
+    </div>
+
     <div class="settings-row">
         <label for="mc-timer-range">Moron checker</label>
         <input type="range" id="mc-timer-range" min="3" max="15" value="5" step="1" oninput="updateTimerLabel(this.value)">
@@ -704,10 +734,12 @@
     <div class="done-screen" id="done-screen">
         <div class="done-title" id="done-title">Complete.</div>
         <div class="done-sub" id="done-sub"></div>
+        <div class="done-sub" id="done-time"></div>
         <div class="done-buttons">
             <button class="restart-btn" onclick="startFresh()">Full drill again</button>
             <button class="missed-only-btn" id="missed-only-btn" onclick="drillMissed()">Missed only</button>
         </div>
+        <div id="done-history"></div>
     </div>
 
     <div class="mc-overlay" id="mc-overlay" tabindex="-1" onclick="dismissMoronChecker()">
@@ -741,12 +773,24 @@
 
         let allFacts = buildTable();
         let queue = [], missed = {}, correct = 0, wrong = 0, streak = 0, current = null, total = 0, done_count = 0;
+        let drillStart = null;
         let mcTimer = null, mcAnimFrame = null, mcStartTime = null, mcDuration = 5000;
         let mcVisible = false;
+        let sessionSize = 0;
 
         function updateTimerLabel(val) {
             document.getElementById('mc-timer-label').textContent = val + 's';
             mcDuration = parseInt(val) * 1000;
+        }
+
+        function setSessionSize(n) {
+            sessionSize = n;
+            [['sess-full', 0], ['sess-25', 25], ['sess-50', 50]].forEach(([id, val]) => {
+                const el = document.getElementById(id);
+                el.style.color = n === val ? '#1a1916' : '';
+                el.style.fontWeight = n === val ? '600' : '';
+            });
+            startFresh();
         }
 
         function shuffle(arr) {
@@ -758,7 +802,10 @@
         }
 
         function startFresh() {
-            queue = shuffle([...allFacts]);
+            drillStart = Date.now();
+            let pool = shuffle([...allFacts]);
+            if (sessionSize > 0) pool = pool.slice(0, sessionSize);
+            queue = [...pool];
             missed = {}; correct = 0; wrong = 0; streak = 0; done_count = 0;
             total = queue.length;
             document.getElementById('done-screen').style.display = 'none';
@@ -769,6 +816,7 @@
         function drillMissed() {
             const mf = Object.keys(missed).map(k => missed[k].fact);
             if (!mf.length) return;
+            drillStart = Date.now();
             queue = shuffle([...mf, ...mf]);
             missed = {}; correct = 0; wrong = 0; streak = 0; done_count = 0;
             total = queue.length;
@@ -973,15 +1021,43 @@
             }).join('');
         }
 
+        function fmtDrillTime(ms) {
+            const s = Math.round(ms / 1000);
+            return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+        }
+
+        function saveDrillResult(key, pct, timeStr, sizeLabel) {
+            let hist = [];
+            try { hist = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+            const d = new Date();
+            hist.unshift({ date: d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), accuracy: pct, time: timeStr, size: sizeLabel });
+            if (hist.length > 5) hist.length = 5;
+            try { localStorage.setItem(key, JSON.stringify(hist)); } catch(e) {}
+            return hist;
+        }
+
+        function renderDrillHistory(hist) {
+            if (!hist.length) return '';
+            return '<div class="done-history"><div class="done-history-label">Recent</div>'
+                + hist.map(r => `<div class="done-history-row">${r.date} &middot; ${r.size || 'Full'} &middot; ${r.accuracy}% &middot; ${r.time}</div>`).join('')
+                + '</div>';
+        }
+
         function showDone() {
             clearMoronChecker();
             document.getElementById('drill-screen').style.display = 'none';
             document.getElementById('done-screen').style.display = 'block';
+            const elapsed = drillStart ? Date.now() - drillStart : 0;
+            const timeStr = fmtDrillTime(elapsed);
+            const sessionLabel = sessionSize === 0 ? 'Full' : String(sessionSize);
             const t = correct + wrong;
             const pct = t > 0 ? Math.round((correct / t) * 100) : 0;
             document.getElementById('done-title').textContent = pct >= 90 ? 'Excellent.' : pct >= 70 ? 'Good progress.' : 'Keep going.';
             document.getElementById('done-sub').textContent = `${correct} correct, ${wrong} missed — ${pct}% accuracy`;
+            document.getElementById('done-time').textContent = timeStr + ' · ' + sessionLabel;
             document.getElementById('missed-only-btn').style.display = Object.keys(missed).length ? 'inline-block' : 'none';
+            const hist = saveDrillResult('history_divide', pct, timeStr, sessionLabel);
+            document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
         }
 
         document.getElementById('answer-input').addEventListener('keydown', e => {
