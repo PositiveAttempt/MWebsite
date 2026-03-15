@@ -73,9 +73,16 @@
             letter-spacing: .04em;
         }
 
-            #mc-setting input[type=range] { width: 48px; accent-color: #1a1916; }
+            #mc-setting input[type=range] {
+                width: 48px;
+                accent-color: #1a1916;
+            }
 
-        #mc-val { font-size: 10px; color: #aaa69e; min-width: 18px; }
+        #mc-val {
+            font-size: 10px;
+            color: #aaa69e;
+            min-width: 18px;
+        }
 
         #prog-wrap {
             position: fixed;
@@ -87,7 +94,12 @@
             z-index: 10;
         }
 
-        #prog-fill { height: 100%; background: #1a1916; width: 0%; transition: width .4s ease; }
+        #prog-fill {
+            height: 100%;
+            background: #1a1916;
+            width: 0%;
+            transition: width .4s ease;
+        }
 
         /* Mode toggle strip */
         #mode-row {
@@ -115,9 +127,14 @@
             user-select: none;
         }
 
-            .mode-btn.active { color: #1a1916; }
+            .mode-btn.active {
+                color: #1a1916;
+            }
 
-        .mode-sep { font-size: 10px; color: #c8c4bc; }
+        .mode-sep {
+            font-size: 10px;
+            color: #c8c4bc;
+        }
 
         #stage {
             position: fixed;
@@ -151,8 +168,18 @@
             margin-bottom: 16px;
         }
 
-        #timer-wrap { width: 100%; height: 1px; background: #e0ddd8; margin-bottom: 16px; }
-        #timer-fill { height: 100%; background: #c8a060; width: 100%; }
+        #timer-wrap {
+            width: 100%;
+            height: 1px;
+            background: #e0ddd8;
+            margin-bottom: 16px;
+        }
+
+        #timer-fill {
+            height: 100%;
+            background: #c8a060;
+            width: 100%;
+        }
 
         #input-row {
             width: 100%;
@@ -179,8 +206,15 @@
             transition: border-color .15s;
         }
 
-            .frac-inp.correct { border-color: #3a7d5e; color: #3a7d5e; }
-            .frac-inp.wrong { border-color: #b84040; color: #b84040; }
+            .frac-inp.correct {
+                border-color: #3a7d5e;
+                color: #3a7d5e;
+            }
+
+            .frac-inp.wrong {
+                border-color: #b84040;
+                color: #b84040;
+            }
 
         #input-sep {
             font-family: 'Libre Baskerville', serif;
@@ -203,7 +237,9 @@
             cursor: pointer;
         }
 
-            #submit-btn:active { opacity: .7; }
+            #submit-btn:active {
+                opacity: .7;
+            }
 
         #feedback {
             font-size: 13px;
@@ -213,8 +249,13 @@
             color: #8a8680;
         }
 
-            #feedback.correct { color: #3a7d5e; }
-            #feedback.wrong { color: #b84040; }
+            #feedback.correct {
+                color: #3a7d5e;
+            }
+
+            #feedback.wrong {
+                color: #b84040;
+            }
 
         #hint-btn {
             margin-top: 10px;
@@ -244,7 +285,9 @@
             padding: 16px;
         }
 
-            #mc-overlay.visible { display: flex; }
+            #mc-overlay.visible {
+                display: flex;
+            }
 
         #mc-label {
             font-size: 10px;
@@ -270,7 +313,9 @@
             margin: 3px 0;
         }
 
-            .mc-fact-row strong { font-weight: 700; }
+            .mc-fact-row strong {
+                font-weight: 700;
+            }
 
         .mc-fact-divider {
             border: none;
@@ -279,7 +324,11 @@
             width: 50px;
         }
 
-        .mc-fact-answer { font-size: 19px; font-weight: 700; margin-top: 4px; }
+        .mc-fact-answer {
+            font-size: 19px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
 
         #mc-dismiss {
             margin-top: 14px;
@@ -304,7 +353,9 @@
             text-align: center;
         }
 
-            #done-screen.visible { display: flex; }
+            #done-screen.visible {
+                display: flex;
+            }
 
         #done-title {
             font-family: 'Cormorant Garamond', serif;
@@ -313,7 +364,12 @@
             margin-bottom: 6px;
         }
 
-        #done-sub { font-size: 15px; color: #8a8680; font-style: italic; margin-bottom: 2rem; }
+        #done-sub {
+            font-size: 15px;
+            color: #8a8680;
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
 
         .done-btn {
             width: 100%;
@@ -328,8 +384,18 @@
             cursor: pointer;
         }
 
-        #restart-btn { background: #1a1916; color: #faf9f7; border: none; }
-        #missed-btn { background: transparent; border: 0.5px solid #c8c4bc; color: #1a1916; display: none; }
+        #restart-btn {
+            background: #1a1916;
+            color: #faf9f7;
+            border: none;
+        }
+
+        #missed-btn {
+            background: transparent;
+            border: 0.5px solid #c8c4bc;
+            color: #1a1916;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -446,16 +512,16 @@
                 const bigNum = Math.round(fact.rNum * mult / fact.rDen);
                 const div = gcd(bigNum, mult);
                 return `<div class="mc-fact-row">${dec} = ${bigNum}/${mult}</div>
-                        <div class="mc-fact-row">÷ ${div}</div>
-                        <hr class="mc-fact-divider">
-                        <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
-                        ${visual}`;
+                            <div class="mc-fact-row">÷ ${div}</div>
+                            <hr class="mc-fact-divider">
+                            <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
+                            ${visual}`;
             }
             return `<div class="mc-fact-row">${fact.num} ÷ ${fact.factor} = <strong>${fact.rNum}</strong></div>
-                    <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
-                    <hr class="mc-fact-divider">
-                    <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
-                    ${visual}`;
+                        <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
+                        <hr class="mc-fact-divider">
+                        <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
+                        ${visual}`;
         }
 
         function buildPieSVG(n, d) {
@@ -545,7 +611,7 @@
         function _clearTimer() {
             _timerGen++;
             if (_timerTimeout) { clearTimeout(_timerTimeout); _timerTimeout = null; }
-            if (_timerRaf)     { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
+            if (_timerRaf) { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
             _timerStart = null;
             document.getElementById('timer-fill').style.width = '100%';
         }
@@ -630,7 +696,12 @@
             document.getElementById('done-screen').classList.add('visible');
         }
 
-        document.getElementById('answer-num').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+        document.getElementById('answer-num').addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const denInp = document.getElementById('answer-den');
+                if (!denInp.value) { denInp.focus(); } else { submit(); }
+            }
+        });
         document.getElementById('answer-den').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
         document.addEventListener('keydown', e => { if (e.key === 'Enter') return; if (mcVisible) dismissMC(); });
 

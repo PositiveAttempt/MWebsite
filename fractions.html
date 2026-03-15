@@ -878,16 +878,16 @@
                 const bigNum = Math.round(fact.rNum * mult / fact.rDen);
                 const div = gcd(bigNum, mult);
                 return `<div class="mc-fact-row">${dec} = ${bigNum}/${mult}</div>
-                        <div class="mc-fact-row">÷ ${div}</div>
-                        <hr class="mc-fact-divider">
-                        <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
-                        ${visual}`;
+                            <div class="mc-fact-row">÷ ${div}</div>
+                            <hr class="mc-fact-divider">
+                            <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
+                            ${visual}`;
             }
             return `<div class="mc-fact-row">${fact.num} ÷ ${fact.factor} = <strong>${fact.rNum}</strong></div>
-                    <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
-                    <hr class="mc-fact-divider">
-                    <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
-                    ${visual}`;
+                        <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
+                        <hr class="mc-fact-divider">
+                        <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
+                        ${visual}`;
         }
 
         function buildPieSVG(n, d) {
@@ -1062,7 +1062,12 @@
             document.getElementById('missed-only-btn').style.display = Object.keys(missed).length ? 'inline-block' : 'none';
         }
 
-        document.getElementById('answer-num').addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
+        document.getElementById('answer-num').addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const denInp = document.getElementById('answer-den');
+                if (!denInp.value) { denInp.focus(); } else { submitAnswer(); }
+            }
+        });
         document.getElementById('answer-den').addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
         document.addEventListener('keydown', e => { if (e.key === 'Enter') return; if (mcVisible) dismissMoronChecker(); });
 
