@@ -10,13 +10,11 @@ juries still out to wether it makes me less shit at maths.
 The goal is to make actually being able to recall times tables, for the brain,
 the path of least resistance.
 
-or not i might try to update it or get claude to update it
-later.
+includes multiplication, division, and fractions of various types. 
+visual feedback hopefully builds connection faster. 
 
 includes a 'moron checker' that flashes up a times table with alpha in front of your face for
 for the specified amount of time. Or if you get a question wrong.
-
-
 
 you really dont need to donate because it was built i claude i
 just put it here but if you want to like cheers thanks man
