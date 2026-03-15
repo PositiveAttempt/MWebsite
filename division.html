@@ -796,32 +796,37 @@
         }
 
         // ── MORON CHECKER ──────────────────────────────────────────────
+        let _timerGen = 0, _timerTimeout = null, _timerRaf = null, _timerStart = null;
+
         function startMoronTimer() {
-            clearTimeout(mcTimer);
-            cancelAnimationFrame(mcAnimFrame);
-            mcStartTime = performance.now();
-            tickTimerBar();
-            mcTimer = setTimeout(showMoronChecker, mcDuration);
+            _clearTimer();
+            const gen = ++_timerGen;
+            _timerStart = performance.now();
+            function tick(now) {
+                if (_timerGen !== gen) return;
+                const pct = Math.max(0, 1 - (now - _timerStart) / mcDuration);
+                document.getElementById('timer-bar').style.width = (pct * 100) + '%';
+                if (pct > 0) _timerRaf = requestAnimationFrame(tick);
+            }
+            _timerRaf = requestAnimationFrame(tick);
+            _timerTimeout = setTimeout(() => {
+                if (_timerGen !== gen) return;
+                showMoronChecker();
+            }, mcDuration);
         }
 
-        function tickTimerBar() {
-            const bar = document.getElementById('timer-bar');
-            function frame(now) {
-                const elapsed = now - mcStartTime;
-                const pct = Math.max(0, 1 - elapsed / mcDuration);
-                bar.style.width = (pct * 100) + '%';
-                if (pct > 0) mcAnimFrame = requestAnimationFrame(frame);
-            }
-            mcAnimFrame = requestAnimationFrame(frame);
+        function _clearTimer() {
+            _timerGen++;
+            if (_timerTimeout) { clearTimeout(_timerTimeout); _timerTimeout = null; }
+            if (_timerRaf)     { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
+            _timerStart = null;
+            document.getElementById('timer-bar').style.width = '100%';
         }
 
         function clearMoronChecker() {
-            clearTimeout(mcTimer);
-            cancelAnimationFrame(mcAnimFrame);
-            mcTimer = null; mcAnimFrame = null; mcStartTime = null;
+            _clearTimer();
             mcVisible = false;
             document.getElementById('mc-overlay').classList.remove('visible');
-            document.getElementById('timer-bar').style.width = '100%';
         }
 
         function dismissMoronChecker() {

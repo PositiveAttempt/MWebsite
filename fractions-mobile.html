@@ -436,6 +436,9 @@
 
         function buildMCContent(fact) {
             const sep = getSep();
+            const visual = currentMode === 'ratio'
+                ? buildBarSVG(fact.rNum, fact.rDen)
+                : buildPieSVG(fact.rNum, fact.rDen);
             if (currentMode === 'decimal') {
                 const dec = String(parseFloat((fact.rNum / fact.rDen).toFixed(10)));
                 const decStr = dec.split('.')[1] || '';
@@ -445,12 +448,37 @@
                 return `<div class="mc-fact-row">${dec} = ${bigNum}/${mult}</div>
                         <div class="mc-fact-row">÷ ${div}</div>
                         <hr class="mc-fact-divider">
-                        <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>`;
+                        <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
+                        ${visual}`;
             }
             return `<div class="mc-fact-row">${fact.num} ÷ ${fact.factor} = <strong>${fact.rNum}</strong></div>
                     <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
                     <hr class="mc-fact-divider">
-                    <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>`;
+                    <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
+                    ${visual}`;
+        }
+
+        function buildPieSVG(n, d) {
+            const cx = 36, cy = 36, r = 32;
+            const angle = (n / d) * 2 * Math.PI;
+            let slice;
+            if (n >= d) {
+                slice = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#3a3730"/>`;
+            } else {
+                const ex = cx + r * Math.sin(angle);
+                const ey = cy - r * Math.cos(angle);
+                const largeArc = angle > Math.PI ? 1 : 0;
+                slice = `<path d="M ${cx} ${cy} L ${cx} ${cy - r} A ${r} ${r} 0 ${largeArc} 1 ${ex.toFixed(2)} ${ey.toFixed(2)} Z" fill="#3a3730"/>`;
+            }
+            return `<svg width="72" height="72" viewBox="0 0 72 72" style="display:block;margin:10px auto 0"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#f5f0e8" stroke="#c8c4bc" stroke-width="0.5"/>${slice}</svg>`;
+        }
+
+        function buildBarSVG(a, b) {
+            const maxH = 60, bw = 18, gap = 8, baseY = 64;
+            const maxVal = Math.max(a, b);
+            const h1 = Math.round((a / maxVal) * maxH);
+            const h2 = Math.round((b / maxVal) * maxH);
+            return `<svg width="52" height="68" viewBox="0 0 52 68" style="display:block;margin:10px auto 0"><rect x="4" y="${baseY - h1}" width="${bw}" height="${h1}" fill="#3a3730"/><rect x="${4 + bw + gap}" y="${baseY - h2}" width="${bw}" height="${h2}" fill="#3a3730"/></svg>`;
         }
 
         function setMode(mode) {
@@ -495,27 +523,37 @@
             updateProgress(); startMCTimer();
         }
 
+        let _timerGen = 0, _timerTimeout = null, _timerRaf = null, _timerStart = null;
+
         function startMCTimer() {
-            clearTimeout(mcTimer); cancelAnimationFrame(mcFrame);
-            mcStart = performance.now(); tickBar();
-            mcTimer = setTimeout(showMC, mcDur);
+            _clearTimer();
+            const gen = ++_timerGen;
+            _timerStart = performance.now();
+            function tick(now) {
+                if (_timerGen !== gen) return;
+                const pct = Math.max(0, 1 - (now - _timerStart) / mcDur);
+                document.getElementById('timer-fill').style.width = (pct * 100) + '%';
+                if (pct > 0) _timerRaf = requestAnimationFrame(tick);
+            }
+            _timerRaf = requestAnimationFrame(tick);
+            _timerTimeout = setTimeout(() => {
+                if (_timerGen !== gen) return;
+                showMC();
+            }, mcDur);
         }
 
-        function tickBar() {
-            const fill = document.getElementById('timer-fill');
-            function frame(now) {
-                const pct = Math.max(0, 1 - (now - mcStart) / mcDur);
-                fill.style.width = (pct * 100) + '%';
-                if (pct > 0) mcFrame = requestAnimationFrame(frame);
-            }
-            mcFrame = requestAnimationFrame(frame);
+        function _clearTimer() {
+            _timerGen++;
+            if (_timerTimeout) { clearTimeout(_timerTimeout); _timerTimeout = null; }
+            if (_timerRaf)     { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
+            _timerStart = null;
+            document.getElementById('timer-fill').style.width = '100%';
         }
 
         function clearMC() {
-            clearTimeout(mcTimer); cancelAnimationFrame(mcFrame);
-            mcTimer = null; mcFrame = null; mcStart = null; mcVisible = false;
+            _clearTimer();
+            mcVisible = false;
             document.getElementById('mc-overlay').classList.remove('visible');
-            document.getElementById('timer-fill').style.width = '100%';
         }
 
         function dismissMC() {
