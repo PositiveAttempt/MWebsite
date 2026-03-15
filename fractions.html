@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Times Tables</title>
-    <meta name="description" content="A free times tables drill built by Claude AI. Wrong answers come back until you know them.">
-    <meta name="keywords" content="times tables, multiplication drill, free, practice, maths, dyscalculia">
+    <title>AI Times Tables — Fractions</title>
+    <meta name="description" content="A free fractions drill built by Claude AI. Simplify, ratio, and decimal modes. Wrong answers come back until you know them.">
     <script>
         if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            window.location.replace('mobile.html');
+            window.location.replace('fractions-mobile.html');
         }
     </script>
     <style>
@@ -56,6 +55,39 @@
             letter-spacing: .15em;
             text-transform: uppercase;
             font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .mode-btn {
+            font-family: 'EB Garamond', serif;
+            font-size: 11px;
+            color: #aaa69e;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            cursor: pointer;
+            transition: color .15s;
+            user-select: none;
+        }
+
+            .mode-btn:hover {
+                color: #1a1916;
+            }
+
+            .mode-btn.active {
+                color: #1a1916;
+            }
+
+        .mode-sep {
+            font-size: 11px;
+            color: #c8c4bc;
         }
 
         .stats-row {
@@ -131,14 +163,16 @@
             width: 100%;
             max-width: 420px;
             margin-bottom: 1rem;
+            align-items: center;
         }
 
         .answer-input {
             flex: 1;
+            min-width: 0;
             background: #fff;
             border: 0.5px solid #c8c4bc;
             border-radius: 2px;
-            padding: 14px 18px;
+            padding: 14px 10px;
             font-family: 'Libre Baskerville', 'Georgia', serif;
             font-size: 28px;
             font-weight: 700;
@@ -146,6 +180,7 @@
             text-align: center;
             outline: none;
             transition: border-color .15s;
+            -webkit-appearance: none;
         }
 
             .answer-input:focus {
@@ -162,6 +197,15 @@
                 color: #b84040;
             }
 
+        .input-sep {
+            font-family: 'Libre Baskerville', 'Georgia', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #c8c4bc;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
         .submit-btn {
             background: #1a1916;
             color: #faf9f7;
@@ -173,6 +217,7 @@
             cursor: pointer;
             transition: opacity .15s, transform .1s;
             letter-spacing: .05em;
+            flex-shrink: 0;
         }
 
             .submit-btn:hover {
@@ -369,41 +414,41 @@
             margin-bottom: 14px;
         }
 
-        .mc-grid {
-            border-collapse: collapse;
+        .mc-content {
             font-family: 'Libre Baskerville', 'Georgia', serif;
+            text-align: center;
+            padding: 1.5rem 2.5rem;
+            border: 0.5px solid #c8c4bc;
+            border-radius: 2px;
+            background: #fff;
+            min-width: 180px;
         }
 
-            .mc-grid td {
-                width: 34px;
-                height: 34px;
-                text-align: center;
-                font-size: 14px;
-                border: 0.5px solid rgba(200,196,188,0.5);
-                color: rgba(106,102,96,0.35);
-                transition: background .15s;
+        .mc-fact-row {
+            font-size: 17px;
+            color: #1a1916;
+            margin: 3px 0;
+            letter-spacing: -0.3px;
+        }
+
+            .mc-fact-row strong {
+                font-weight: 700;
+                color: #1a1916;
             }
 
-                .mc-grid td.mc-header {
-                    font-size: 12px;
-                    color: rgba(170,166,158,0.4);
-                    background: rgba(245,244,241,0.5);
-                    font-style: italic;
-                }
+        .mc-fact-divider {
+            border: none;
+            border-top: 0.5px solid #c8c4bc;
+            margin: 8px auto;
+            width: 60px;
+        }
 
-                .mc-grid td.mc-highlight {
-                    background: #1a1916;
-                    color: #faf9f7;
-                    font-size: 17px;
-                    font-weight: 700;
-                    font-style: normal;
-                }
-
-                .mc-grid td.mc-row-header, .mc-grid td.mc-col-header {
-                    background: #eeecea;
-                    color: #1a1916;
-                    font-weight: 500;
-                }
+        .mc-fact-answer {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 6px;
+            color: #1a1916;
+        }
 
         .mc-dismiss {
             margin-top: 18px;
@@ -429,8 +474,6 @@
             height: 100%;
             background: #c8a060;
             width: 100%;
-            transform-origin: left;
-            transition: none;
         }
 
         .settings-row {
@@ -457,7 +500,6 @@
                 text-align: right;
             }
 
-        /* ── MOBILE — designed for keyboard-up use ── */
         @media (max-width: 480px) {
             body {
                 padding: 0;
@@ -535,7 +577,7 @@
             }
 
             .question {
-                font-size: 72px;
+                font-size: 56px;
                 margin-bottom: 4px;
             }
 
@@ -557,14 +599,17 @@
             }
 
             .answer-input {
-                font-size: 28px;
-                padding: 14px 10px;
+                font-size: 24px;
+                padding: 14px 6px;
+            }
+
+            .input-sep {
+                font-size: 24px;
             }
 
             .submit-btn {
-                padding: 14px 20px;
+                padding: 14px 18px;
                 font-size: 22px;
-                flex-shrink: 0;
             }
 
             .feedback {
@@ -583,36 +628,21 @@
                 padding: 3px 8px;
             }
 
-            /* overlay: full screen but scrollable grid centered on highlight */
             .mc-overlay {
-                align-items: center;
-                justify-content: center;
-                background: rgba(250,249,247,0.88);
-                backdrop-filter: blur(3px);
                 padding: 12px;
             }
 
-            .mc-grid-wrap {
-                overflow: auto;
-                max-width: 100%;
-                max-height: 42vh;
-                display: flex;
-                justify-content: center;
+            .mc-content {
+                padding: 1rem 1.5rem;
             }
 
-            .mc-grid td {
-                width: 24px;
-                height: 24px;
-                font-size: 11px;
+            .mc-fact-row {
+                font-size: 15px;
             }
 
-                .mc-grid td.mc-header {
-                    font-size: 10px;
-                }
-
-                .mc-grid td.mc-highlight {
-                    font-size: 13px;
-                }
+            .mc-fact-answer {
+                font-size: 22px;
+            }
 
             .mc-label {
                 font-size: 10px;
@@ -623,15 +653,6 @@
             .mc-dismiss {
                 font-size: 10px;
                 margin-top: 8px;
-            }
-
-            /* fix submit button clipping */
-            .input-row {
-                padding-right: 0;
-            }
-
-            .answer-input {
-                min-width: 0;
             }
 
             .done-screen {
@@ -657,12 +678,15 @@
 
     <div class="header">
         <div class="title">Times Tables</div>
-        <div class="subtitle">Multiplication drill</div>
-        <div style="margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;">
-            <a href="division.html" style="font-family:'EB Garamond',serif;font-size:11px;color:#aaa69e;text-decoration:none;letter-spacing:.12em;text-transform:uppercase;">÷ Division</a>
-            <span style="color:#c8c4bc;font-size:11px;">·</span>
-            <a href="fractions.html" style="font-family:'EB Garamond',serif;font-size:11px;color:#aaa69e;text-decoration:none;letter-spacing:.12em;text-transform:uppercase;">½ Fractions</a>
+        <div class="subtitle">Fractions drill</div>
+        <div class="mode-toggle">
+            <span class="mode-btn active" data-mode="simplify" onclick="setMode('simplify')">Simplify</span>
+            <span class="mode-sep">·</span>
+            <span class="mode-btn" data-mode="ratio" onclick="setMode('ratio')">Ratio</span>
+            <span class="mode-sep">·</span>
+            <span class="mode-btn" data-mode="decimal" onclick="setMode('decimal')">Decimal</span>
         </div>
+        <a href="index.html" style="display:inline-block;font-family:'EB Garamond',serif;font-size:11px;color:#aaa69e;text-decoration:none;letter-spacing:.12em;text-transform:uppercase;">× Times Tables</a>
     </div>
 
     <div class="stats-row">
@@ -676,14 +700,14 @@
     </div>
 
     <div class="settings-row">
-        <label for="mc-timer-range">Moron checker</label>
+        <label for="mc-timer-range">Hint timer</label>
         <input type="range" id="mc-timer-range" min="3" max="15" value="5" step="1" oninput="updateTimerLabel(this.value)">
         <span id="mc-timer-label">5s</span>
     </div>
 
     <div id="drill-screen">
         <div class="card">
-            <div class="question" id="question">? × ?</div>
+            <div class="question" id="question">?/?</div>
             <div class="hint" id="hint-text"></div>
         </div>
 
@@ -692,7 +716,9 @@
         </div>
 
         <div class="input-row">
-            <input class="answer-input" id="answer-input" type="number" inputmode="numeric" placeholder="—" autocomplete="off" />
+            <input class="answer-input" id="answer-num" type="number" inputmode="numeric" placeholder="—" autocomplete="off">
+            <div class="input-sep" id="input-sep">/</div>
+            <input class="answer-input" id="answer-den" type="number" inputmode="numeric" placeholder="—" autocomplete="off">
             <button class="submit-btn" onclick="submitAnswer()">→</button>
         </div>
 
@@ -716,37 +742,192 @@
 
     <div class="mc-overlay" id="mc-overlay" tabindex="-1" onclick="dismissMoronChecker()">
         <div class="mc-label" id="mc-label"></div>
-        <div class="mc-grid-wrap" id="mc-grid-wrap"><table class="mc-grid" id="mc-grid"></table></div>
+        <div class="mc-content" id="mc-content"></div>
         <div class="mc-dismiss">Any key or tap to dismiss</div>
     </div>
 
     <script>
-        const HINTS = {
-            '2': n => `${n} + ${n}`,
-            '3': n => `3 × ${n - 1} + ${n} = ${3 * (n - 1)} + ${n}`,
-            '4': n => `Double ${n}, then double again — ${n * 2} × 2`,
-            '5': n => `Count by fives — ends in 0 or 5`,
-            '6': n => `5 × ${n} + ${n} = ${5 * n} + ${n}`,
-            '7': n => `5 × ${n} + 2 × ${n} = ${5 * n} + ${2 * n}`,
-            '8': n => `Double, double, double — 2 × ${n} × 2 × 2`,
-            '9': n => `10 × ${n} − ${n} = ${10 * n} − ${n}`,
-            '10': n => `Add a zero — ${n}0`,
-            '11': n => n <= 9 ? `Repeat the digit — ${n}${n}` : `10 × ${n} + ${n} = ${10 * n} + ${n}`,
-            '12': n => `10 × ${n} + 2 × ${n} = ${10 * n} + ${2 * n}`,
-        };
+        let currentMode = 'simplify';
+        let queue = [], missed = {}, correct = 0, wrong = 0, streak = 0, current = null, total = 0, doneCount = 0;
+        let mcDuration = 5000;
+        let mcVisible = false;
 
-        function buildTable() {
-            let facts = [];
-            for (let a = 2; a <= 12; a++)
-                for (let b = a; b <= 12; b++)
-                    facts.push([a, b]);
+        // ── TIMER — single source of truth ──────────────────────────────
+        // A generation counter kills stale rAF callbacks instantly.
+        // clearTimer() always runs before startTimer() so there's never
+        // more than one active loop at a time.
+        let _timerGen = 0;
+        let _timerTimeout = null;
+        let _timerRaf = null;
+        let _timerStart = null;
+
+        function startMoronTimer() {
+            _clearTimer();
+            const gen = ++_timerGen;
+            _timerStart = performance.now();
+
+            // rAF loop — bails immediately if generation is stale
+            function tick(now) {
+                if (_timerGen !== gen) return;
+                const pct = Math.max(0, 1 - (now - _timerStart) / mcDuration);
+                document.getElementById('timer-bar').style.width = (pct * 100) + '%';
+                if (pct > 0) {
+                    _timerRaf = requestAnimationFrame(tick);
+                }
+            }
+            _timerRaf = requestAnimationFrame(tick);
+
+            _timerTimeout = setTimeout(() => {
+                if (_timerGen !== gen) return;
+                showMoronChecker();
+            }, mcDuration);
+        }
+
+        function _clearTimer() {
+            _timerGen++;                          // invalidates any live rAF loop
+            if (_timerTimeout) { clearTimeout(_timerTimeout); _timerTimeout = null; }
+            if (_timerRaf) { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
+            _timerStart = null;
+            document.getElementById('timer-bar').style.width = '100%';
+        }
+        // ────────────────────────────────────────────────────────────────
+
+        function clearMoronChecker() {
+            _clearTimer();
+            mcVisible = false;
+            document.getElementById('mc-overlay').classList.remove('visible');
+        }
+
+        function dismissMoronChecker() {
+            if (!mcVisible) return;
+            mcVisible = false;
+            document.getElementById('mc-overlay').classList.remove('visible');
+            document.getElementById('answer-num').focus();
+        }
+
+        function showMoronChecker() {
+            if (!current) return;
+            document.getElementById('mc-label').textContent = buildMCLabel(current);
+            document.getElementById('mc-content').innerHTML = buildMCContent(current);
+            mcVisible = true;
+            document.getElementById('mc-overlay').classList.add('visible');
+            document.getElementById('answer-num').focus();
+        }
+
+        // ── DATA ────────────────────────────────────────────────────────
+        function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+        function buildFacts() {
+            if (currentMode === 'decimal') return buildDecimalFacts();
+            const facts = [];
+            for (let a = 1; a <= 12; a++) {
+                for (let b = 2; b <= 12; b++) {
+                    if (a >= b || gcd(a, b) !== 1) continue;
+                    for (let k = 2; k <= 12; k++) {
+                        const num = a * k, den = b * k;
+                        if (num > 99 || den > 99) continue;
+                        facts.push({ num, den, rNum: a, rDen: b, factor: k });
+                    }
+                }
+            }
             return facts;
         }
 
-        let allFacts = buildTable();
-        let queue = [], missed = {}, correct = 0, wrong = 0, streak = 0, current = null, total = 0, done_count = 0;
-        let mcTimer = null, mcAnimFrame = null, mcStartTime = null, mcDuration = 5000;
-        let mcVisible = false;   // track overlay state ourselves
+        function buildDecimalFacts() {
+            const termDens = [2, 4, 5, 8, 10];
+            const facts = [];
+            for (let a = 1; a <= 11; a++) {
+                for (const b of termDens) {
+                    if (a >= b || gcd(a, b) !== 1) continue;
+                    facts.push({ num: a, den: b, rNum: a, rDen: b, factor: 1 });
+                }
+            }
+            return facts;
+        }
+
+        function getSep() { return currentMode === 'ratio' ? ':' : '/'; }
+
+        function formatQuestion(fact) {
+            if (currentMode === 'simplify') return `${fact.num}/${fact.den}`;
+            if (currentMode === 'ratio') return `${fact.num}:${fact.den}`;
+            return String(parseFloat((fact.rNum / fact.rDen).toFixed(10)));
+        }
+
+        function formatAnswer(fact) {
+            return `${fact.rNum}${getSep()}${fact.rDen}`;
+        }
+
+        function formatMissedPill(fact) {
+            const sep = getSep();
+            if (currentMode === 'decimal') {
+                const dec = String(parseFloat((fact.rNum / fact.rDen).toFixed(10)));
+                return `${dec} = ${fact.rNum}/${fact.rDen}`;
+            }
+            return `${fact.num}${sep}${fact.den} = ${fact.rNum}${sep}${fact.rDen}`;
+        }
+
+        function buildMCContent(fact) {
+            const sep = getSep();
+            const visual = currentMode === 'ratio'
+                ? buildBarSVG(fact.rNum, fact.rDen)
+                : buildPieSVG(fact.rNum, fact.rDen);
+            if (currentMode === 'decimal') {
+                const dec = String(parseFloat((fact.rNum / fact.rDen).toFixed(10)));
+                const decStr = dec.split('.')[1] || '';
+                const mult = Math.pow(10, decStr.length);
+                const bigNum = Math.round(fact.rNum * mult / fact.rDen);
+                const div = gcd(bigNum, mult);
+                return `<div class="mc-fact-row">${dec} = ${bigNum}/${mult}</div>
+                            <div class="mc-fact-row">÷ ${div}</div>
+                            <hr class="mc-fact-divider">
+                            <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
+                            ${visual}`;
+            }
+            return `<div class="mc-fact-row">${fact.num} ÷ ${fact.factor} = <strong>${fact.rNum}</strong></div>
+                        <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
+                        <hr class="mc-fact-divider">
+                        <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
+                        ${visual}`;
+        }
+
+        function buildPieSVG(n, d) {
+            const cx = 36, cy = 36, r = 32;
+            const angle = (n / d) * 2 * Math.PI;
+            let slice;
+            if (n >= d) {
+                slice = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#3a3730"/>`;
+            } else {
+                const ex = cx + r * Math.sin(angle);
+                const ey = cy - r * Math.cos(angle);
+                const largeArc = angle > Math.PI ? 1 : 0;
+                slice = `<path d="M ${cx} ${cy} L ${cx} ${cy - r} A ${r} ${r} 0 ${largeArc} 1 ${ex.toFixed(2)} ${ey.toFixed(2)} Z" fill="#3a3730"/>`;
+            }
+            return `<svg width="72" height="72" viewBox="0 0 72 72" style="display:block;margin:10px auto 0"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#f5f0e8" stroke="#c8c4bc" stroke-width="0.5"/>${slice}</svg>`;
+        }
+
+        function buildBarSVG(a, b) {
+            const maxH = 60, bw = 18, gap = 8, baseY = 64;
+            const maxVal = Math.max(a, b);
+            const h1 = Math.round((a / maxVal) * maxH);
+            const h2 = Math.round((b / maxVal) * maxH);
+            return `<svg width="52" height="68" viewBox="0 0 52 68" style="display:block;margin:10px auto 0"><rect x="4" y="${baseY - h1}" width="${bw}" height="${h1}" fill="#3a3730"/><rect x="${4 + bw + gap}" y="${baseY - h2}" width="${bw}" height="${h2}" fill="#3a3730"/></svg>`;
+        }
+
+        function buildMCLabel(fact) {
+            const q = formatQuestion(fact);
+            return mcDuration > 2500 ? `yeah — ${q}` : `hint — ${q}`;
+        }
+
+        // ── FLOW ────────────────────────────────────────────────────────
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === mode);
+            });
+            document.getElementById('input-sep').textContent = getSep();
+            document.getElementById('question').textContent = mode === 'decimal' ? '?' : '?/?';
+            startFresh();
+        }
 
         function updateTimerLabel(val) {
             document.getElementById('mc-timer-label').textContent = val + 's';
@@ -762,8 +943,8 @@
         }
 
         function startFresh() {
-            queue = shuffle([...allFacts]);
-            missed = {}; correct = 0; wrong = 0; streak = 0; done_count = 0;
+            queue = shuffle(buildFacts());
+            missed = {}; correct = 0; wrong = 0; streak = 0; doneCount = 0;
             total = queue.length;
             document.getElementById('done-screen').style.display = 'none';
             document.getElementById('drill-screen').style.display = 'block';
@@ -774,7 +955,7 @@
             const mf = Object.keys(missed).map(k => missed[k].fact);
             if (!mf.length) return;
             queue = shuffle([...mf, ...mf]);
-            missed = {}; correct = 0; wrong = 0; streak = 0; done_count = 0;
+            missed = {}; correct = 0; wrong = 0; streak = 0; doneCount = 0;
             total = queue.length;
             document.getElementById('done-screen').style.display = 'none';
             document.getElementById('drill-screen').style.display = 'block';
@@ -784,167 +965,67 @@
         function nextQuestion() {
             clearMoronChecker();
             if (!queue.length) { showDone(); return; }
-            const flip = Math.random() > 0.5;
-            const [a, b] = queue.pop();
-            current = flip ? [b, a] : [a, b];
-            document.getElementById('question').textContent = `${current[0]} × ${current[1]}`;
+            current = queue.pop();
+            document.getElementById('question').textContent = formatQuestion(current);
             document.getElementById('hint-text').textContent = '';
             document.getElementById('feedback').textContent = '';
             document.getElementById('feedback').className = 'feedback';
-            const inp = document.getElementById('answer-input');
-            inp.value = ''; inp.className = 'answer-input'; inp.focus();
+            const numInp = document.getElementById('answer-num');
+            const denInp = document.getElementById('answer-den');
+            numInp.value = ''; numInp.className = 'answer-input';
+            denInp.value = ''; denInp.className = 'answer-input';
+            numInp.focus();
             updateProgress(); updateMissed();
             startMoronTimer();
         }
 
-        // ── MORON CHECKER ──────────────────────────────────────────────
-        let _timerGen = 0, _timerTimeout = null, _timerRaf = null, _timerStart = null;
-
-        function startMoronTimer() {
-            _clearTimer();
-            const gen = ++_timerGen;
-            _timerStart = performance.now();
-            function tick(now) {
-                if (_timerGen !== gen) return;
-                const pct = Math.max(0, 1 - (now - _timerStart) / mcDuration);
-                document.getElementById('timer-bar').style.width = (pct * 100) + '%';
-                if (pct > 0) _timerRaf = requestAnimationFrame(tick);
-            }
-            _timerRaf = requestAnimationFrame(tick);
-            _timerTimeout = setTimeout(() => {
-                if (_timerGen !== gen) return;
-                showMoronChecker();
-            }, mcDuration);
-        }
-
-        function _clearTimer() {
-            _timerGen++;
-            if (_timerTimeout) { clearTimeout(_timerTimeout); _timerTimeout = null; }
-            if (_timerRaf)     { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
-            _timerStart = null;
-            document.getElementById('timer-bar').style.width = '100%';
-        }
-
-        function clearMoronChecker() {
-            _clearTimer();
-            mcVisible = false;
-            document.getElementById('mc-overlay').classList.remove('visible');
-        }
-
-        function dismissMoronChecker() {
-            if (!mcVisible) return;
-            mcVisible = false;
-            document.getElementById('mc-overlay').classList.remove('visible');
-            document.getElementById('answer-input').focus();
-        }
-
-        function showMoronChecker() {
-            if (!current) return;
-            const [qa, qb] = current;
-            const label = mcDuration > 2500 ? `yeah — ${qa} × ${qb}` : `moron checker — ${qa} × ${qb}`;
-            document.getElementById('mc-label').textContent = label;
-            buildMCGrid(qa, qb);
-            mcVisible = true;
-            document.getElementById('mc-overlay').classList.add('visible');
-            // keep keyboard up on mobile — refocus input immediately
-            document.getElementById('answer-input').focus();
-            // scroll highlighted cell into center of the grid wrapper
-            setTimeout(() => {
-                const hl = document.querySelector('.mc-highlight');
-                const wrap = document.getElementById('mc-grid-wrap');
-                if (hl && wrap) {
-                    const cellLeft = hl.offsetLeft;
-                    const cellTop = hl.offsetTop;
-                    wrap.scrollLeft = cellLeft - wrap.clientWidth / 2 + hl.offsetWidth / 2;
-                    wrap.scrollTop = cellTop - wrap.clientHeight / 2 + hl.offsetHeight / 2;
-                }
-            }, 50);
-        }
-
-        function buildMCGrid(qa, qb) {
-            const table = document.getElementById('mc-grid');
-            table.innerHTML = '';
-            const cols = [];
-            for (let c = 2; c <= 12; c++) cols.push(c);
-
-            const thead = document.createElement('tr');
-            const corner = document.createElement('td');
-            corner.className = 'mc-header';
-            corner.textContent = '×';
-            thead.appendChild(corner);
-            for (const c of cols) {
-                const th = document.createElement('td');
-                th.textContent = c;
-                th.className = c === qb ? 'mc-col-header' : 'mc-header';
-                thead.appendChild(th);
-            }
-            table.appendChild(thead);
-
-            for (let r = 2; r <= 12; r++) {
-                const tr = document.createElement('tr');
-                const rh = document.createElement('td');
-                rh.textContent = r;
-                rh.className = r === qa ? 'mc-row-header' : 'mc-header';
-                tr.appendChild(rh);
-                for (const c of cols) {
-                    const td = document.createElement('td');
-                    td.textContent = r * c;
-                    if (r === qa && c === qb) {
-                        td.className = 'mc-highlight';
-                    } else if (r === qa || c === qb) {
-                        td.style.background = '#f5f0e8';
-                        td.style.color = '#9a8060';
-                    }
-                    tr.appendChild(td);
-                }
-                table.appendChild(tr);
-            }
-        }
-
-        function getHintText(a, b) {
-            const key = String(Math.min(a, b)), other = Math.max(a, b);
-            return HINTS[key] ? HINTS[key](other) : `${a} × ${b} = ${a * b}`;
-        }
-
         function showHint() {
-            if (current) document.getElementById('hint-text').textContent = getHintText(current[0], current[1]);
+            if (!current) return;
+            if (currentMode === 'decimal') {
+                document.getElementById('hint-text').textContent = `= ${current.rNum}/${current.rDen}`;
+            } else {
+                document.getElementById('hint-text').textContent = `÷ ${current.factor} → ${formatAnswer(current)}`;
+            }
         }
 
         function submitAnswer() {
             if (!current) return;
-            // if moron checker is up, dismiss it and wait for next attempt
             if (mcVisible) { dismissMoronChecker(); return; }
             clearMoronChecker();
-            const inp = document.getElementById('answer-input');
-            const val = parseInt(inp.value);
-            if (isNaN(val)) return;
-            const ans = current[0] * current[1];
-            const key = current.join('×');
+            const numVal = parseInt(document.getElementById('answer-num').value);
+            const denVal = parseInt(document.getElementById('answer-den').value);
+            if (isNaN(numVal) || isNaN(denVal)) return;
 
-            if (val === ans) {
-                inp.className = 'answer-input correct';
+            const isCorrect = numVal === current.rNum && denVal === current.rDen;
+            const key = `${current.num}${getSep()}${current.den}`;
+            const numInp = document.getElementById('answer-num');
+            const denInp = document.getElementById('answer-den');
+
+            if (isCorrect) {
+                numInp.className = 'answer-input correct';
+                denInp.className = 'answer-input correct';
                 document.getElementById('feedback').textContent = streak >= 4 ? `${streak + 1} in a row` : 'Correct';
                 document.getElementById('feedback').className = 'feedback correct';
-                correct++; streak++; done_count++;
+                correct++; streak++; doneCount++;
                 if (missed[key]) { missed[key].count--; if (missed[key].count <= 0) delete missed[key]; }
                 updateStats();
                 setTimeout(nextQuestion, 600);
             } else {
-                inp.className = 'answer-input wrong';
-                document.getElementById('feedback').textContent = `The answer is ${ans} — ${getHintText(current[0], current[1])}`;
+                numInp.className = 'answer-input wrong';
+                denInp.className = 'answer-input wrong';
+                document.getElementById('feedback').textContent = `The answer is ${formatAnswer(current)}`;
                 document.getElementById('feedback').className = 'feedback wrong';
                 wrong++; streak = 0;
                 if (!missed[key]) missed[key] = { fact: current, count: 0 };
                 missed[key].count++;
                 queue.unshift(current);
                 updateStats();
-                // show the grid immediately on wrong answer
                 showMoronChecker();
                 setTimeout(() => {
-                    inp.value = ''; inp.className = 'answer-input';
+                    numInp.value = ''; numInp.className = 'answer-input';
+                    denInp.value = ''; denInp.className = 'answer-input';
                     document.getElementById('feedback').textContent = '';
                     document.getElementById('feedback').className = 'feedback';
-                    // leave grid visible — user dismisses when ready
                 }, 500);
             }
         }
@@ -956,7 +1037,7 @@
         }
 
         function updateProgress() {
-            const pct = total > 0 ? Math.round((done_count / total) * 100) : 0;
+            const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
             document.getElementById('progress-bar').style.width = pct + '%';
         }
 
@@ -965,10 +1046,9 @@
             const sec = document.getElementById('missed-section');
             if (!keys.length) { sec.style.display = 'none'; return; }
             sec.style.display = 'block';
-            document.getElementById('missed-pills').innerHTML = keys.map(k => {
-                const [a, b] = missed[k].fact;
-                return `<span class="missed-pill">${a} × ${b} = ${a * b}</span>`;
-            }).join('');
+            document.getElementById('missed-pills').innerHTML = keys.map(k =>
+                `<span class="missed-pill">${formatMissedPill(missed[k].fact)}</span>`
+            ).join('');
         }
 
         function showDone() {
@@ -982,27 +1062,24 @@
             document.getElementById('missed-only-btn').style.display = Object.keys(missed).length ? 'inline-block' : 'none';
         }
 
-        document.getElementById('answer-input').addEventListener('keydown', e => {
-            if (e.key === 'Enter') submitAnswer();
+        document.getElementById('answer-num').addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const denInp = document.getElementById('answer-den');
+                if (!denInp.value) { denInp.focus(); } else { submitAnswer(); }
+            }
         });
+        document.getElementById('answer-den').addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Enter') return; if (mcVisible) dismissMoronChecker(); });
 
-        // any key EXCEPT Enter dismisses the overlay (Enter is handled by submitAnswer)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') return;
-            if (mcVisible) dismissMoronChecker();
+        document.getElementById('answer-num').addEventListener('input', () => {
+            if (!current) return;
+            if (parseInt(document.getElementById('answer-num').value) === current.rNum) {
+                document.getElementById('answer-den').focus();
+            }
         });
 
         startFresh();
     </script>
-
-    <form action="https://www.paypal.com/donate" method="post" target="_top">
-        <input type="hidden" name="business" value="FA3KWH54X2BCU" />
-        <input type="hidden" name="no_recurring" value="0" />
-        <input type="hidden" name="item_name" value="tysm" />
-        <input type="hidden" name="currency_code" value="AUD" />
-        <input type="image" src="https://www.paypalobjects.com/en_AU/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-        <img alt="" border="0" src="https://www.paypal.com/en_AU/i/scr/pixel.gif" width="1" height="1" />
-    </form>
 
     <div style="margin-top:1.5rem;font-family:'EB Garamond','Times New Roman',serif;font-size:12px;color:#aaa69e;letter-spacing:.08em;"><a href="https://github.com/PositiveAttempt" target="_blank" rel="noopener" style="color:#aaa69e;text-decoration:none;">PositiveAttempt</a></div>
 

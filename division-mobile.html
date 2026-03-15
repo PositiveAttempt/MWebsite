@@ -471,27 +471,37 @@
             updateProgress(); startMCTimer();
         }
 
+        let _timerGen = 0, _timerTimeout = null, _timerRaf = null, _timerStart = null;
+
         function startMCTimer() {
-            clearTimeout(mcTimer); cancelAnimationFrame(mcFrame);
-            mcStart = performance.now(); tickBar();
-            mcTimer = setTimeout(showMC, mcDur);
+            _clearTimer();
+            const gen = ++_timerGen;
+            _timerStart = performance.now();
+            function tick(now) {
+                if (_timerGen !== gen) return;
+                const pct = Math.max(0, 1 - (now - _timerStart) / mcDur);
+                document.getElementById('timer-fill').style.width = (pct * 100) + '%';
+                if (pct > 0) _timerRaf = requestAnimationFrame(tick);
+            }
+            _timerRaf = requestAnimationFrame(tick);
+            _timerTimeout = setTimeout(() => {
+                if (_timerGen !== gen) return;
+                showMC();
+            }, mcDur);
         }
 
-        function tickBar() {
-            const fill = document.getElementById('timer-fill');
-            function frame(now) {
-                const pct = Math.max(0, 1 - (now - mcStart) / mcDur);
-                fill.style.width = (pct * 100) + '%';
-                if (pct > 0) mcFrame = requestAnimationFrame(frame);
-            }
-            mcFrame = requestAnimationFrame(frame);
+        function _clearTimer() {
+            _timerGen++;
+            if (_timerTimeout) { clearTimeout(_timerTimeout); _timerTimeout = null; }
+            if (_timerRaf)     { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
+            _timerStart = null;
+            document.getElementById('timer-fill').style.width = '100%';
         }
 
         function clearMC() {
-            clearTimeout(mcTimer); cancelAnimationFrame(mcFrame);
-            mcTimer = null; mcFrame = null; mcStart = null; mcVisible = false;
+            _clearTimer();
+            mcVisible = false;
             document.getElementById('mc-overlay').classList.remove('visible');
-            document.getElementById('timer-fill').style.width = '100%';
         }
 
         function dismissMC() {
