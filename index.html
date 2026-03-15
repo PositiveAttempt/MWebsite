@@ -600,7 +600,7 @@
         </div>
     </div>
 
-    <div class="mc-overlay" id="mc-overlay" onclick="dismissMoronChecker()">
+    <div class="mc-overlay" id="mc-overlay" tabindex="-1" onclick="dismissMoronChecker()">
         <div class="mc-label" id="mc-label"></div>
         <table class="mc-grid" id="mc-grid"></table>
         <div class="mc-dismiss">Any key or tap to dismiss</div>
@@ -727,6 +727,8 @@
             buildMCGrid(qa, qb);
             mcVisible = true;
             document.getElementById('mc-overlay').classList.add('visible');
+            // keep keyboard up on mobile — refocus input immediately
+            document.getElementById('answer-input').focus();
         }
 
         function buildMCGrid(qa, qb) {
