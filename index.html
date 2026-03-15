@@ -452,58 +452,132 @@
                 text-align: right;
             }
 
-        /* ── MOBILE ── */
+        /* ── MOBILE — designed for keyboard-up use ── */
         @media (max-width: 480px) {
             body {
-                padding: 1.5rem 1rem;
+                padding: 0;
+                justify-content: flex-start;
             }
 
             .header {
-                margin-bottom: 1.5rem;
-                padding-bottom: 1rem;
+                margin-bottom: 0;
+                padding: 0.6rem 1rem;
+                border-bottom: 0.5px solid #c8c4bc;
+                max-width: 100%;
+                width: 100%;
             }
 
             .title {
-                font-size: 24px;
+                font-size: 18px;
+                letter-spacing: 0.1em;
+            }
+
+            .subtitle {
+                display: none;
             }
 
             .stats-row {
-                margin-bottom: 1.5rem;
-            }
-
-            .stat-num {
-                font-size: 20px;
+                max-width: 100%;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                margin-bottom: 0;
+                border-top: none;
             }
 
             .stat {
-                padding: 10px 6px;
+                padding: 6px 4px;
             }
 
-            .card {
-                padding: 2rem 1.2rem;
-                margin-bottom: 1rem;
-            }
-
-            .question {
-                font-size: 52px;
-            }
-
-            .answer-input {
-                font-size: 22px;
-                padding: 12px 10px;
-            }
-
-            .submit-btn {
-                padding: 12px 16px;
+            .stat-num {
                 font-size: 18px;
             }
 
-            .timer-bar-wrap {
-                margin-top: -1rem;
-                margin-bottom: 1rem;
+            .stat-label {
+                font-size: 9px;
+                margin-top: 2px;
             }
 
-            /* grid: shrink cells to fit ~320px screens */
+            .progress-bar-wrap {
+                max-width: 100%;
+                margin-bottom: 0;
+                border-radius: 0;
+            }
+
+            .settings-row {
+                max-width: 100%;
+                padding: 0.4rem 1rem;
+                margin-bottom: 0;
+                border-bottom: 0.5px solid #eeecea;
+            }
+
+            #drill-screen {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 0 1rem;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 100%;
+                border-left: none;
+                border-right: none;
+                border-radius: 0;
+                padding: 1.4rem 1rem 1rem;
+                margin-bottom: 0;
+            }
+
+            .question {
+                font-size: 72px;
+                margin-bottom: 4px;
+            }
+
+            .hint {
+                font-size: 13px;
+            }
+
+            .timer-bar-wrap {
+                max-width: 100%;
+                margin-top: 0;
+                margin-bottom: 0.6rem;
+                border-radius: 0;
+            }
+
+            .input-row {
+                max-width: 100%;
+                margin-bottom: 0.5rem;
+                gap: 6px;
+            }
+
+            .answer-input {
+                font-size: 28px;
+                padding: 14px 10px;
+            }
+
+            .submit-btn {
+                padding: 14px 20px;
+                font-size: 22px;
+                flex-shrink: 0;
+            }
+
+            .feedback {
+                margin-bottom: 0.4rem;
+                font-size: 14px;
+            }
+
+            .hint-btn {
+                padding: 5px 14px;
+                font-size: 12px;
+                margin-bottom: 0.8rem;
+            }
+
+            .missed-pill {
+                font-size: 12px;
+                padding: 3px 8px;
+            }
+
             .mc-grid td {
                 width: 26px;
                 height: 26px;
@@ -521,12 +595,16 @@
             .mc-label {
                 font-size: 10px;
                 letter-spacing: .1em;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
 
             .mc-dismiss {
                 font-size: 11px;
-                margin-top: 12px;
+                margin-top: 10px;
+            }
+
+            .done-screen {
+                padding: 2rem 1rem;
             }
 
             .done-title {
