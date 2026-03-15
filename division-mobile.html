@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>Times Tables — Division</title>
+    <script>try{if(localStorage.getItem('dark')==='1')document.documentElement.classList.add('dark');}catch(e){}</script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=EB+Garamond:wght@400&family=Libre+Baskerville:wght@400;700&display=swap');
 
@@ -392,6 +393,38 @@
             font-style: italic;
             margin: 2px 0;
         }
+
+        /* ── DARK MODE ── */
+        .sess-active { color: #1a1916; }
+        html.dark { color-scheme: dark; }
+        html.dark body { background: #0d0f12; color: #c8c4bc; }
+        html.dark #hud { border-bottom-color: #252830; background: #0d0f12; }
+        html.dark #hud-stats span b { color: #faf9f7; }
+        html.dark #prog-wrap { background: #252830; }
+        html.dark #prog-fill { background: #c8c4bc; }
+        html.dark #timer-wrap { background: #252830; }
+        html.dark #question { color: #faf9f7; }
+        html.dark #hint-text { color: #6a6660; }
+        html.dark #answer-input { background: #13161a; border-color: #252830; color: #faf9f7; }
+        html.dark #submit-btn { background: #c8c4bc; color: #0d0f12; }
+        html.dark #feedback { color: #6a6660; }
+        html.dark #hint-btn { border-color: #252830; color: #6a6660; }
+        html.dark #mc-overlay { background: rgba(13,15,18,0.92); }
+        html.dark #mc-label { color: #6a6660; }
+        html.dark .mc-grid td { border-color: rgba(37,40,48,0.8); color: rgba(106,102,96,0.4); }
+        html.dark .mc-grid td.mc-header { background: rgba(19,22,26,0.8); color: rgba(106,102,96,0.5); }
+        html.dark .mc-grid td.mc-highlight { background: #faf9f7; color: #0d0f12; }
+        html.dark .mc-grid td.mc-row-header, html.dark .mc-grid td.mc-col-header { background: #1e2228; color: #c8c4bc; }
+        html.dark #mc-dismiss { color: #6a6660; }
+        html.dark #done-screen { background: #0d0f12; }
+        html.dark #done-title { color: #faf9f7; }
+        html.dark #done-sub { color: #6a6660; }
+        html.dark #done-time { color: #6a6660; }
+        html.dark #restart-btn { background: #c8c4bc; color: #0d0f12; }
+        html.dark #missed-btn { border-color: #252830; color: #c8c4bc; }
+        html.dark .done-history-label { color: #3d4148; }
+        html.dark .done-history-row { color: #6a6660; }
+        html.dark .sess-active { color: #faf9f7; }
     </style>
 </head>
 <body>
@@ -406,7 +439,7 @@
             <span><b id="s-streak">0</b>run</span>
         </div>
         <div id="mc-setting">
-            <span id="sess-full" onclick="setSessionSize(0)" style="cursor:pointer;color:#1a1916;font-weight:600">Full</span>
+            <span id="sess-full" class="sess-active" onclick="setSessionSize(0)" style="cursor:pointer;font-weight:600">Full</span>
             <span style="color:#c8c4bc">·</span>
             <span id="sess-25" onclick="setSessionSize(25)" style="cursor:pointer">25</span>
             <span style="color:#c8c4bc">·</span>
@@ -414,6 +447,8 @@
             <span style="color:#c8c4bc;margin:0 2px">|</span>
             <input type="range" id="mc-range" min="3" max="15" value="5" step="1" oninput="updateTimer(this.value)">
             <span id="mc-val">5s</span>
+            <span style="color:#c8c4bc;margin:0 2px">|</span>
+            <span id="dark-toggle" onclick="toggleDark()" style="cursor:pointer;font-size:12px;color:#aaa69e;user-select:none;flex-shrink:0">☽</span>
         </div>
     </div>
 
@@ -479,7 +514,7 @@
             sessionSize = n;
             [['sess-full', 0], ['sess-25', 25], ['sess-50', 50]].forEach(([id, val]) => {
                 const el = document.getElementById(id);
-                el.style.color = n === val ? '#1a1916' : '';
+                el.classList.toggle('sess-active', n === val);
                 el.style.fontWeight = n === val ? '600' : '';
             });
             startFresh();
@@ -598,7 +633,11 @@
                 for (const c of cols) {
                     const td = document.createElement('td'); td.textContent = r * c;
                     if (r === qa && c === qb) { td.style.background = '#c8a060'; td.style.color = '#fff'; td.style.fontWeight = '700'; }
-                    else if (r === qa || c === qb) { td.style.background = 'rgba(245,240,232,0.9)'; td.style.color = '#9a8060'; }
+                    else if (r === qa || c === qb) {
+                        const dark = document.documentElement.classList.contains('dark');
+                        td.style.background = dark ? '#1e2228' : 'rgba(245,240,232,0.9)';
+                        td.style.color = dark ? '#6a6660' : '#9a8060';
+                    }
                     tr.appendChild(td);
                 }
                 table.appendChild(tr);
@@ -681,6 +720,11 @@
             const hist = saveDrillResult('history_divide', pct, timeStr, sessionLabel);
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
             document.getElementById('done-screen').classList.add('visible');
+        }
+
+        function toggleDark() {
+            const dark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('dark', dark ? '1' : '0'); } catch(e) {}
         }
 
         document.getElementById('answer-input').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });

@@ -10,6 +10,7 @@
             window.location.replace('fractions-mobile.html');
         }
     </script>
+    <script>try{if(localStorage.getItem('dark')==='1')document.documentElement.classList.add('dark');}catch(e){}</script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:wght@400;500&family=Libre+Baskerville:wght@400;700&display=swap');
 
@@ -693,9 +694,64 @@
                 text-align: center;
             }
         }
+
+        /* ── DARK MODE ── */
+        .sess-active { color: #1a1916; }
+        html.dark { color-scheme: dark; }
+        html.dark body { background: #0d0f12; color: #c8c4bc; }
+        html.dark .header { border-bottom-color: #252830; }
+        html.dark .title { color: #faf9f7; }
+        html.dark .subtitle { color: #6a6660; }
+        html.dark .mode-btn { color: #6a6660; }
+        html.dark .mode-btn:hover { color: #c8c4bc; }
+        html.dark .mode-btn.active { color: #faf9f7; }
+        html.dark .mode-sep { color: #3d4148; }
+        html.dark .stats-row { border-color: #252830; }
+        html.dark .stat { border-right-color: #252830; }
+        html.dark .stat-num { color: #faf9f7; }
+        html.dark .stat-label { color: #6a6660; }
+        html.dark .card { background: #13161a; border-color: #252830; }
+        html.dark .question { color: #faf9f7; }
+        html.dark .hint { color: #6a6660; }
+        html.dark .answer-input { background: #13161a; border-color: #252830; color: #faf9f7; }
+        html.dark .answer-input:focus { border-color: #c8c4bc; }
+        html.dark .input-sep { color: #3d4148; }
+        html.dark .submit-btn { background: #c8c4bc; color: #0d0f12; }
+        html.dark .hint-btn { border-color: #252830; color: #6a6660; }
+        html.dark .hint-btn:hover { border-color: #c8c4bc; color: #c8c4bc; }
+        html.dark .progress-bar-wrap { background: #252830; }
+        html.dark .progress-bar-fill { background: #c8c4bc; }
+        html.dark .missed-title { color: #6a6660; }
+        html.dark .missed-pill { background: #13161a; }
+        html.dark .done-title { color: #faf9f7; }
+        html.dark .done-sub { color: #6a6660; }
+        html.dark .restart-btn { background: #c8c4bc; color: #0d0f12; }
+        html.dark .missed-only-btn { border-color: #252830; color: #c8c4bc; }
+        html.dark .missed-only-btn:hover { border-color: #c8c4bc; }
+        html.dark .done-history-label { color: #3d4148; }
+        html.dark .done-history-row { color: #6a6660; }
+        html.dark .mc-overlay { background: rgba(13,15,18,0.92); }
+        html.dark .mc-label { color: #6a6660; }
+        html.dark .mc-content { background: #13161a; border-color: #252830; }
+        html.dark .mc-fact-row { color: #c8c4bc; }
+        html.dark .mc-fact-row strong { color: #faf9f7; }
+        html.dark .mc-fact-divider { border-top-color: #252830; }
+        html.dark .mc-fact-answer { color: #faf9f7; }
+        html.dark .mc-dismiss { color: #6a6660; }
+        html.dark .timer-bar-wrap { background: #252830; }
+        html.dark .settings-row { color: #6a6660; }
+        html.dark .settings-row input[type=range] { accent-color: #c8c4bc; }
+        html.dark .sess-active { color: #faf9f7; }
+        @media (max-width: 480px) {
+            html.dark .settings-row { border-bottom-color: #252830; }
+        }
+        #dark-toggle { position: fixed; top: 1rem; right: 1.5rem; cursor: pointer; font-size: 16px; color: #aaa69e; line-height: 1; user-select: none; z-index: 200; background: none; border: none; padding: 0; }
+        html.dark #dark-toggle { color: #6a6660; }
     </style>
 </head>
 <body>
+
+    <button id="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">☽</button>
 
     <div class="header">
         <div class="title">Times Tables</div>
@@ -722,7 +778,7 @@
 
     <div class="settings-row" style="margin-bottom:.5rem">
         <label>Session</label>
-        <span id="sess-full" onclick="setSessionSize(0)" style="cursor:pointer;min-width:auto;text-align:left;color:#1a1916;font-weight:600">Full</span>
+        <span id="sess-full" class="sess-active" onclick="setSessionSize(0)" style="cursor:pointer;min-width:auto;text-align:left;font-weight:600">Full</span>
         <span style="color:#c8c4bc;min-width:auto">·</span>
         <span id="sess-25" onclick="setSessionSize(25)" style="cursor:pointer;min-width:auto;text-align:left">25</span>
         <span style="color:#c8c4bc;min-width:auto">·</span>
@@ -925,26 +981,32 @@
         }
 
         function buildPieSVG(n, d) {
+            const dark = document.documentElement.classList.contains('dark');
+            const bgFill = dark ? '#1e2228' : '#f5f0e8';
+            const stroke = dark ? '#252830' : '#c8c4bc';
+            const fill = dark ? '#c8c4bc' : '#3a3730';
             const cx = 36, cy = 36, r = 32;
             const angle = (n / d) * 2 * Math.PI;
             let slice;
             if (n >= d) {
-                slice = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#3a3730"/>`;
+                slice = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"/>`;
             } else {
                 const ex = cx + r * Math.sin(angle);
                 const ey = cy - r * Math.cos(angle);
                 const largeArc = angle > Math.PI ? 1 : 0;
-                slice = `<path d="M ${cx} ${cy} L ${cx} ${cy - r} A ${r} ${r} 0 ${largeArc} 1 ${ex.toFixed(2)} ${ey.toFixed(2)} Z" fill="#3a3730"/>`;
+                slice = `<path d="M ${cx} ${cy} L ${cx} ${cy - r} A ${r} ${r} 0 ${largeArc} 1 ${ex.toFixed(2)} ${ey.toFixed(2)} Z" fill="${fill}"/>`;
             }
-            return `<svg width="72" height="72" viewBox="0 0 72 72" style="display:block;margin:10px auto 0"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#f5f0e8" stroke="#c8c4bc" stroke-width="0.5"/>${slice}</svg>`;
+            return `<svg width="72" height="72" viewBox="0 0 72 72" style="display:block;margin:10px auto 0"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${bgFill}" stroke="${stroke}" stroke-width="0.5"/>${slice}</svg>`;
         }
 
         function buildBarSVG(a, b) {
+            const dark = document.documentElement.classList.contains('dark');
+            const fill = dark ? '#c8c4bc' : '#3a3730';
             const maxH = 60, bw = 18, gap = 8, baseY = 64;
             const maxVal = Math.max(a, b);
             const h1 = Math.round((a / maxVal) * maxH);
             const h2 = Math.round((b / maxVal) * maxH);
-            return `<svg width="52" height="68" viewBox="0 0 52 68" style="display:block;margin:10px auto 0"><rect x="4" y="${baseY - h1}" width="${bw}" height="${h1}" fill="#3a3730"/><rect x="${4 + bw + gap}" y="${baseY - h2}" width="${bw}" height="${h2}" fill="#3a3730"/></svg>`;
+            return `<svg width="52" height="68" viewBox="0 0 52 68" style="display:block;margin:10px auto 0"><rect x="4" y="${baseY - h1}" width="${bw}" height="${h1}" fill="${fill}"/><rect x="${4 + bw + gap}" y="${baseY - h2}" width="${bw}" height="${h2}" fill="${fill}"/></svg>`;
         }
 
         function buildMCLabel(fact) {
@@ -972,7 +1034,7 @@
             sessionSize = n;
             [['sess-full', 0], ['sess-25', 25], ['sess-50', 50]].forEach(([id, val]) => {
                 const el = document.getElementById(id);
-                el.style.color = n === val ? '#1a1916' : '';
+                el.classList.toggle('sess-active', n === val);
                 el.style.fontWeight = n === val ? '600' : '';
             });
             startFresh();
@@ -1136,6 +1198,11 @@
             document.getElementById('missed-only-btn').style.display = Object.keys(missed).length ? 'inline-block' : 'none';
             const hist = saveDrillResult('history_fractions_' + currentMode, pct, timeStr, sessionLabel);
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
+        }
+
+        function toggleDark() {
+            const dark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('dark', dark ? '1' : '0'); } catch(e) {}
         }
 
         document.getElementById('answer-num').addEventListener('keydown', e => {

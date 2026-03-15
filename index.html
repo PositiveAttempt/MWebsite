@@ -11,6 +11,7 @@
             window.location.replace('mobile.html');
         }
     </script>
+    <script>try{if(localStorage.getItem('dark')==='1')document.documentElement.classList.add('dark');}catch(e){}</script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:wght@400;500&family=Libre+Baskerville:wght@400;700&display=swap');
 
@@ -672,9 +673,58 @@
                 text-align: center;
             }
         }
+
+        /* ── DARK MODE ── */
+        .sess-active { color: #1a1916; }
+        html.dark { color-scheme: dark; }
+        html.dark body { background: #0d0f12; color: #c8c4bc; }
+        html.dark .header { border-bottom-color: #252830; }
+        html.dark .title { color: #faf9f7; }
+        html.dark .subtitle { color: #6a6660; }
+        html.dark .stats-row { border-color: #252830; }
+        html.dark .stat { border-right-color: #252830; }
+        html.dark .stat-num { color: #faf9f7; }
+        html.dark .stat-label { color: #6a6660; }
+        html.dark .card { background: #13161a; border-color: #252830; }
+        html.dark .question { color: #faf9f7; }
+        html.dark .hint { color: #6a6660; }
+        html.dark .answer-input { background: #13161a; border-color: #252830; color: #faf9f7; }
+        html.dark .answer-input:focus { border-color: #c8c4bc; }
+        html.dark .submit-btn { background: #c8c4bc; color: #0d0f12; }
+        html.dark .hint-btn { border-color: #252830; color: #6a6660; }
+        html.dark .hint-btn:hover { border-color: #c8c4bc; color: #c8c4bc; }
+        html.dark .progress-bar-wrap { background: #252830; }
+        html.dark .progress-bar-fill { background: #c8c4bc; }
+        html.dark .missed-title { color: #6a6660; }
+        html.dark .missed-pill { background: #13161a; }
+        html.dark .done-title { color: #faf9f7; }
+        html.dark .done-sub { color: #6a6660; }
+        html.dark .restart-btn { background: #c8c4bc; color: #0d0f12; }
+        html.dark .missed-only-btn { border-color: #252830; color: #c8c4bc; }
+        html.dark .missed-only-btn:hover { border-color: #c8c4bc; }
+        html.dark .done-history-label { color: #3d4148; }
+        html.dark .done-history-row { color: #6a6660; }
+        html.dark .mc-overlay { background: rgba(13,15,18,0.92); }
+        html.dark .mc-label { color: #6a6660; }
+        html.dark .mc-grid td { border-color: rgba(37,40,48,0.8); color: rgba(106,102,96,0.4); }
+        html.dark .mc-grid td.mc-header { background: rgba(19,22,26,0.8); color: rgba(106,102,96,0.5); }
+        html.dark .mc-grid td.mc-highlight { background: #faf9f7; color: #0d0f12; }
+        html.dark .mc-grid td.mc-row-header, html.dark .mc-grid td.mc-col-header { background: #1e2228; color: #c8c4bc; }
+        html.dark .mc-dismiss { color: #6a6660; }
+        html.dark .timer-bar-wrap { background: #252830; }
+        html.dark .settings-row { color: #6a6660; }
+        html.dark .settings-row input[type=range] { accent-color: #c8c4bc; }
+        html.dark .sess-active { color: #faf9f7; }
+        @media (max-width: 480px) {
+            html.dark .settings-row { border-bottom-color: #252830; }
+        }
+        #dark-toggle { position: fixed; top: 1rem; right: 1.5rem; cursor: pointer; font-size: 16px; color: #aaa69e; line-height: 1; user-select: none; z-index: 200; background: none; border: none; padding: 0; }
+        html.dark #dark-toggle { color: #6a6660; }
     </style>
 </head>
 <body>
+
+    <button id="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">☽</button>
 
     <div class="header">
         <div class="title">Times Tables</div>
@@ -698,7 +748,7 @@
 
     <div class="settings-row" style="margin-bottom:.5rem">
         <label>Session</label>
-        <span id="sess-full" onclick="setSessionSize(0)" style="cursor:pointer;min-width:auto;text-align:left;color:#1a1916;font-weight:600">Full</span>
+        <span id="sess-full" class="sess-active" onclick="setSessionSize(0)" style="cursor:pointer;min-width:auto;text-align:left;font-weight:600">Full</span>
         <span style="color:#c8c4bc;min-width:auto">·</span>
         <span id="sess-25" onclick="setSessionSize(25)" style="cursor:pointer;min-width:auto;text-align:left">25</span>
         <span style="color:#c8c4bc;min-width:auto">·</span>
@@ -791,7 +841,7 @@
             sessionSize = n;
             [['sess-full', 0], ['sess-25', 25], ['sess-50', 50]].forEach(([id, val]) => {
                 const el = document.getElementById(id);
-                el.style.color = n === val ? '#1a1916' : '';
+                el.classList.toggle('sess-active', n === val);
                 el.style.fontWeight = n === val ? '600' : '';
             });
             startFresh();
@@ -940,8 +990,9 @@
                     if (r === qa && c === qb) {
                         td.className = 'mc-highlight';
                     } else if (r === qa || c === qb) {
-                        td.style.background = '#f5f0e8';
-                        td.style.color = '#9a8060';
+                        const dark = document.documentElement.classList.contains('dark');
+                        td.style.background = dark ? '#1e2228' : '#f5f0e8';
+                        td.style.color = dark ? '#6a6660' : '#9a8060';
                     }
                     tr.appendChild(td);
                 }
@@ -1056,6 +1107,11 @@
             document.getElementById('missed-only-btn').style.display = Object.keys(missed).length ? 'inline-block' : 'none';
             const hist = saveDrillResult('history_multiply', pct, timeStr, sessionLabel);
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
+        }
+
+        function toggleDark() {
+            const dark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('dark', dark ? '1' : '0'); } catch(e) {}
         }
 
         document.getElementById('answer-input').addEventListener('keydown', e => {
