@@ -436,6 +436,15 @@
             font-style: italic;
         }
 
+        .mc-hint {
+            margin-top: 10px;
+            font-size: 12px;
+            font-style: italic;
+            color: #c8a060;
+            letter-spacing: .04em;
+            text-align: center;
+        }
+
         .timer-bar-wrap {
             width: 100%;
             max-width: 420px;
@@ -795,6 +804,7 @@
     <div class="mc-overlay" id="mc-overlay" tabindex="-1" onclick="dismissMoronChecker()">
         <div class="mc-label" id="mc-label"></div>
         <div class="mc-grid-wrap" id="mc-grid-wrap"><table class="mc-grid" id="mc-grid"></table></div>
+        <div class="mc-hint" id="mc-hint"></div>
         <div class="mc-dismiss">Any key or tap to dismiss</div>
     </div>
 
@@ -925,6 +935,7 @@
             _clearTimer();
             mcVisible = false;
             document.getElementById('mc-overlay').classList.remove('visible');
+            document.getElementById('mc-hint').textContent = '';
         }
 
         function dismissMoronChecker() {
@@ -941,6 +952,7 @@
             const label = mcDuration > 2500 ? `yeah — ${product} ÷ ${qa}` : `moron checker — ${product} ÷ ${qa}`;
             document.getElementById('mc-label').textContent = label;
             buildMCGrid(qa, qb);
+            document.getElementById('mc-hint').textContent = getHintText(qa, qb);
             mcVisible = true;
             document.getElementById('mc-overlay').classList.add('visible');
             document.getElementById('answer-input').focus();
@@ -1034,7 +1046,7 @@
                 setTimeout(nextQuestion, 600);
             } else {
                 inp.className = 'answer-input wrong';
-                document.getElementById('feedback').textContent = `The answer is ${ans} — ${getHintText(current[0], current[1])}`;
+                document.getElementById('feedback').textContent = '';
                 document.getElementById('feedback').className = 'feedback wrong';
                 wrong++; streak = 0;
                 if (!missed[key]) missed[key] = { fact: current, count: 0 };

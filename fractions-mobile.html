@@ -340,6 +340,15 @@
             font-style: italic;
         }
 
+        #mc-hint {
+            margin-top: 10px;
+            font-size: 12px;
+            font-style: italic;
+            color: #c8a060;
+            letter-spacing: .04em;
+            text-align: center;
+        }
+
         /* DONE */
         #done-screen {
             display: none;
@@ -517,6 +526,7 @@
     <div id="mc-overlay" tabindex="-1">
         <div id="mc-label"></div>
         <div id="mc-content"></div>
+        <div id="mc-hint"></div>
         <div id="mc-dismiss">Tap or type to dismiss</div>
     </div>
 
@@ -719,6 +729,7 @@
             _clearTimer();
             mcVisible = false;
             document.getElementById('mc-overlay').classList.remove('visible');
+            document.getElementById('mc-hint').textContent = '';
         }
 
         function dismissMC() {
@@ -759,7 +770,7 @@
                 updateStats(); setTimeout(nextQ, 500);
             } else {
                 n.className = 'frac-inp wrong'; d.className = 'frac-inp wrong';
-                document.getElementById('feedback').textContent = formatAnswer(current);
+                document.getElementById('feedback').textContent = '';
                 document.getElementById('feedback').className = 'wrong';
                 wrong++; streak = 0;
                 if (!missed[key]) missed[key] = { fact: current, count: 0 };
