@@ -5,16 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>Times Tables — Fractions</title>
     <script>try{if(localStorage.getItem('dark')==='1')document.documentElement.classList.add('dark');}catch(e){}</script>
+    <link rel="stylesheet" href="shared.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=EB+Garamond:wght@400&family=Libre+Baskerville:wght@400;700&display=swap');
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { -webkit-tap-highlight-color: transparent; }
         html, body {
             height: 100%;
             overflow: hidden;
@@ -24,83 +17,7 @@
             position: fixed;
             width: 100%;
         }
-
-        #hud {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 5px 14px;
-            border-bottom: 0.5px solid #e0ddd8;
-            background: #faf9f7;
-            z-index: 10;
-        }
-
-        #hud-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: .22em;
-            text-transform: uppercase;
-            color: #aaa69e;
-        }
-
-        #hud-stats {
-            display: flex;
-            gap: 12px;
-            font-size: 10px;
-            color: #aaa69e;
-            letter-spacing: .06em;
-            text-transform: uppercase;
-        }
-
-            #hud-stats span b {
-                font-family: 'Libre Baskerville', serif;
-                font-size: 12px;
-                font-weight: 700;
-                color: #1a1916;
-                margin-right: 1px;
-            }
-
-        #mc-setting {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            color: #c8c4bc;
-            letter-spacing: .04em;
-        }
-
-            #mc-setting input[type=range] {
-                width: 48px;
-                accent-color: #1a1916;
-            }
-
-        #mc-val {
-            font-size: 10px;
-            color: #aaa69e;
-            min-width: 18px;
-        }
-
-        #prog-wrap {
-            position: fixed;
-            top: 29px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e0ddd8;
-            z-index: 10;
-        }
-
-        #prog-fill {
-            height: 100%;
-            background: #1a1916;
-            width: 0%;
-            transition: width .4s ease;
-        }
+        html.dark body { background: #0d0f12; color: #c8c4bc; }
 
         /* Mode toggle strip */
         #mode-row {
@@ -137,59 +54,12 @@
             color: #c8c4bc;
         }
 
+        /* Stage starts below mode-row */
         #stage {
-            position: fixed;
             top: 52px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem 1.4rem 0.8rem;
         }
 
-        #question {
-            font-family: 'Libre Baskerville', serif;
-            font-size: 72px;
-            font-weight: 700;
-            letter-spacing: -2px;
-            line-height: 1;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        #hint-text {
-            font-size: 13px;
-            color: #8a8680;
-            font-style: italic;
-            text-align: center;
-            min-height: 18px;
-            margin-bottom: 16px;
-        }
-
-        #timer-wrap {
-            width: 100%;
-            height: 1px;
-            background: #e0ddd8;
-            margin-bottom: 16px;
-        }
-
-        #timer-fill {
-            height: 100%;
-            background: #c8a060;
-            width: 100%;
-        }
-
-        #input-row {
-            width: 100%;
-            display: flex;
-            gap: 6px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-
+        /* Fraction inputs */
         .frac-inp {
             flex: 1;
             min-width: 0;
@@ -226,78 +96,7 @@
             line-height: 1;
         }
 
-        #submit-btn {
-            flex-shrink: 0;
-            width: 52px;
-            background: #1a1916;
-            color: #faf9f7;
-            border: none;
-            border-radius: 2px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-            #submit-btn:active {
-                opacity: .7;
-            }
-
-        #feedback {
-            font-size: 13px;
-            font-style: italic;
-            text-align: center;
-            min-height: 18px;
-            color: #8a8680;
-        }
-
-            #feedback.correct {
-                color: #3a7d5e;
-            }
-
-            #feedback.wrong {
-                color: #b84040;
-            }
-
-        #hint-btn {
-            margin-top: 10px;
-            background: transparent;
-            border: 0.5px solid #c8c4bc;
-            border-radius: 2px;
-            padding: 4px 14px;
-            font-family: 'EB Garamond', serif;
-            font-size: 11px;
-            color: #8a8680;
-            text-transform: uppercase;
-            letter-spacing: .1em;
-            cursor: pointer;
-        }
-
-        /* MORON CHECKER */
-        #mc-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: rgba(250,249,247,0.88);
-            backdrop-filter: blur(4px);
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-            #mc-overlay.visible {
-                display: flex;
-            }
-
-        #mc-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: .2em;
-            color: #8a8680;
-            margin-bottom: 12px;
-        }
-
+        /* Fraction MC content card */
         #mc-content {
             font-family: 'Libre Baskerville', serif;
             text-align: center;
@@ -331,147 +130,18 @@
             margin-top: 4px;
         }
 
-        #mc-dismiss {
-            margin-top: 14px;
-            font-size: 10px;
-            color: #aaa69e;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            font-style: italic;
-        }
-
-        #mc-hint {
-            margin-top: 10px;
-            font-size: 12px;
-            font-style: italic;
-            color: #c8a060;
-            letter-spacing: .04em;
-            text-align: center;
-        }
-
-        /* DONE */
-        #done-screen {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            background: #faf9f7;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            text-align: center;
-        }
-
-            #done-screen.visible {
-                display: flex;
-            }
-
-        #done-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 48px;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        #done-sub {
-            font-size: 15px;
-            color: #8a8680;
-            font-style: italic;
-            margin-bottom: 2rem;
-        }
-
-        .done-btn {
-            width: 100%;
-            max-width: 260px;
-            padding: 13px;
-            margin-bottom: 10px;
-            font-family: 'EB Garamond', serif;
-            font-size: 14px;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            border-radius: 2px;
-            cursor: pointer;
-        }
-
-        #restart-btn {
-            background: #1a1916;
-            color: #faf9f7;
-            border: none;
-        }
-
-        #missed-btn {
-            background: transparent;
-            border: 0.5px solid #c8c4bc;
-            color: #1a1916;
-            display: none;
-        }
-
-        #done-time {
-            font-size: 15px;
-            color: #8a8680;
-            font-style: italic;
-            margin-bottom: 0.5rem;
-        }
-
-        #done-history {
-            margin-top: 1.5rem;
-            text-align: center;
-        }
-
-        .done-history-label {
-            font-family: 'EB Garamond', serif;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: .14em;
-            color: #c8c4bc;
-            margin-bottom: 6px;
-        }
-
-        .done-history-row {
-            font-size: 13px;
-            color: #aaa69e;
-            font-style: italic;
-            margin: 2px 0;
-        }
-
-        /* ── DARK MODE ── */
-        .sess-active { color: #1a1916; }
-        html.dark { color-scheme: dark; }
-        html.dark body { background: #0d0f12; color: #c8c4bc; }
-        html.dark #hud { border-bottom-color: #252830; background: #0d0f12; }
-        html.dark #hud-stats span b { color: #faf9f7; }
-        html.dark #prog-wrap { background: #252830; }
-        html.dark #prog-fill { background: #c8c4bc; }
+        /* Fractions dark mode overrides */
         html.dark #mode-row { border-bottom-color: #252830; background: #0d0f12; }
         html.dark .mode-btn { color: #6a6660; }
         html.dark .mode-btn.active { color: #faf9f7; }
         html.dark .mode-sep { color: #3d4148; }
-        html.dark #timer-wrap { background: #252830; }
-        html.dark #question { color: #faf9f7; }
-        html.dark #hint-text { color: #6a6660; }
         html.dark .frac-inp { background: #13161a; border-color: #252830; color: #faf9f7; }
         html.dark #input-sep { color: #3d4148; }
-        html.dark #submit-btn { background: #c8c4bc; color: #0d0f12; }
-        html.dark #feedback { color: #6a6660; }
-        html.dark #hint-btn { border-color: #252830; color: #6a6660; }
-        html.dark #mc-overlay { background: rgba(13,15,18,0.92); }
-        html.dark #mc-label { color: #6a6660; }
         html.dark #mc-content { background: #13161a; border-color: #252830; }
         html.dark .mc-fact-row { color: #c8c4bc; }
         html.dark .mc-fact-row strong { color: #faf9f7; }
         html.dark .mc-fact-divider { border-top-color: #252830; }
         html.dark .mc-fact-answer { color: #faf9f7; }
-        html.dark #mc-dismiss { color: #6a6660; }
-        html.dark #done-screen { background: #0d0f12; }
-        html.dark #done-title { color: #faf9f7; }
-        html.dark #done-sub { color: #6a6660; }
-        html.dark #done-time { color: #6a6660; }
-        html.dark #restart-btn { background: #c8c4bc; color: #0d0f12; }
-        html.dark #missed-btn { border-color: #252830; color: #c8c4bc; }
-        html.dark .done-history-label { color: #3d4148; }
-        html.dark .done-history-row { color: #6a6660; }
-        html.dark .sess-active { color: #faf9f7; }
     </style>
 </head>
 <body>
@@ -539,12 +209,13 @@
         <div id="done-history"></div>
     </div>
 
+    <script src="shared.js"></script>
     <script>
         let currentMode = 'simplify';
         let queue = [], missed = {};
         let correct = 0, wrong = 0, streak = 0, current = null, total = 0, doneCount = 0;
         let drillStart = null;
-        let mcTimer = null, mcFrame = null, mcStart = null, mcDur = 5000, mcVisible = false;
+        let mcTimer = null, mcFrame = null, mcStart = null, mcVisible = false;
         let sessionSize = 0;
 
         function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
@@ -661,7 +332,6 @@
             });
             startFresh();
         }
-        function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
 
         function startFresh() {
             drillStart = Date.now();
@@ -696,33 +366,6 @@
             d.value = ''; d.className = 'frac-inp';
             n.focus();
             updateProgress(); startMCTimer();
-        }
-
-        let _timerGen = 0, _timerTimeout = null, _timerRaf = null, _timerStart = null;
-
-        function startMCTimer() {
-            _clearTimer();
-            const gen = ++_timerGen;
-            _timerStart = performance.now();
-            function tick(now) {
-                if (_timerGen !== gen) return;
-                const pct = Math.max(0, 1 - (now - _timerStart) / mcDur);
-                document.getElementById('timer-fill').style.width = (pct * 100) + '%';
-                if (pct > 0) _timerRaf = requestAnimationFrame(tick);
-            }
-            _timerRaf = requestAnimationFrame(tick);
-            _timerTimeout = setTimeout(() => {
-                if (_timerGen !== gen) return;
-                showMC();
-            }, mcDur);
-        }
-
-        function _clearTimer() {
-            _timerGen++;
-            if (_timerTimeout) { clearTimeout(_timerTimeout); _timerTimeout = null; }
-            if (_timerRaf) { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
-            _timerStart = null;
-            document.getElementById('timer-fill').style.width = '100%';
         }
 
         function clearMC() {
@@ -786,39 +429,6 @@
             }
         }
 
-        function updateStats() {
-            document.getElementById('s-correct').textContent = correct;
-            document.getElementById('s-wrong').textContent = wrong;
-            document.getElementById('s-streak').textContent = streak;
-        }
-
-        function updateProgress() {
-            const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
-            document.getElementById('prog-fill').style.width = pct + '%';
-        }
-
-        function fmtDrillTime(ms) {
-            const s = Math.round(ms / 1000);
-            return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
-        }
-
-        function saveDrillResult(key, pct, timeStr, sizeLabel) {
-            let hist = [];
-            try { hist = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
-            const d = new Date();
-            hist.unshift({ date: d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), accuracy: pct, time: timeStr, size: sizeLabel });
-            if (hist.length > 5) hist.length = 5;
-            try { localStorage.setItem(key, JSON.stringify(hist)); } catch(e) {}
-            return hist;
-        }
-
-        function renderDrillHistory(hist) {
-            if (!hist.length) return '';
-            return '<div class="done-history"><div class="done-history-label">Recent</div>'
-                + hist.map(r => `<div class="done-history-row">${r.date} &middot; ${r.size || 'Full'} &middot; ${r.accuracy}% &middot; ${r.time}</div>`).join('')
-                + '</div>';
-        }
-
         function showDone() {
             clearMC();
             const elapsed = drillStart ? Date.now() - drillStart : 0;
@@ -832,11 +442,6 @@
             const hist = saveDrillResult('history_fractions_' + currentMode, pct, timeStr, sessionLabel);
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
             document.getElementById('done-screen').classList.add('visible');
-        }
-
-        function toggleDark() {
-            const dark = document.documentElement.classList.toggle('dark');
-            try { localStorage.setItem('dark', dark ? '1' : '0'); } catch(e) {}
         }
 
         document.getElementById('answer-num').addEventListener('keydown', e => {

@@ -11,53 +11,9 @@
         }
     </script>
     <script>try{if(localStorage.getItem('dark')==='1')document.documentElement.classList.add('dark');}catch(e){}</script>
+    <link rel="stylesheet" href="shared.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:wght@400;500&family=Libre+Baskerville:wght@400;700&display=swap');
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: #faf9f7;
-            font-family: 'EB Garamond', 'Times New Roman', serif;
-            color: #1a1916;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 3rem 1.5rem;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            border-bottom: 0.5px solid #c8c4bc;
-            padding-bottom: 1.5rem;
-            width: 100%;
-            max-width: 420px;
-        }
-
-        .title {
-            font-family: 'Cormorant Garamond', 'Times New Roman', serif;
-            font-weight: 600;
-            font-size: 32px;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #1a1916;
-            margin-bottom: 4px;
-        }
-
-        .subtitle {
-            font-size: 13px;
-            color: #8a8680;
-            letter-spacing: .15em;
-            text-transform: uppercase;
-            font-style: italic;
-            margin-bottom: 10px;
-        }
+        .subtitle { margin-bottom: 10px; }
 
         .mode-toggle {
             display: flex;
@@ -78,125 +34,13 @@
             user-select: none;
         }
 
-            .mode-btn:hover {
-                color: #1a1916;
-            }
-
-            .mode-btn.active {
-                color: #1a1916;
-            }
+            .mode-btn:hover { color: #1a1916; }
+            .mode-btn.active { color: #1a1916; }
 
         .mode-sep {
             font-size: 11px;
             color: #c8c4bc;
         }
-
-        .stats-row {
-            display: flex;
-            gap: 0;
-            margin-bottom: 2.5rem;
-            width: 100%;
-            max-width: 420px;
-            border: 0.5px solid #c8c4bc;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .stat {
-            flex: 1;
-            padding: 12px 10px;
-            text-align: center;
-            border-right: 0.5px solid #c8c4bc;
-        }
-
-            .stat:last-child {
-                border-right: none;
-            }
-
-        .stat-num {
-            font-family: 'Libre Baskerville', 'Georgia', serif;
-            font-size: 26px;
-            font-weight: 700;
-            color: #1a1916;
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 10px;
-            color: #8a8680;
-            text-transform: uppercase;
-            letter-spacing: .1em;
-            margin-top: 3px;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 420px;
-            border: 0.5px solid #c8c4bc;
-            border-radius: 2px;
-            padding: 3rem 2rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            background: #fff;
-        }
-
-        .question {
-            font-family: 'Libre Baskerville', 'Georgia', serif;
-            font-size: 64px;
-            font-weight: 700;
-            color: #1a1916;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
-            line-height: 1;
-        }
-
-        .hint {
-            font-size: 14px;
-            color: #8a8680;
-            min-height: 20px;
-            font-style: italic;
-            letter-spacing: .01em;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-            max-width: 420px;
-            margin-bottom: 1rem;
-            align-items: center;
-        }
-
-        .answer-input {
-            flex: 1;
-            min-width: 0;
-            background: #fff;
-            border: 0.5px solid #c8c4bc;
-            border-radius: 2px;
-            padding: 14px 10px;
-            font-family: 'Libre Baskerville', 'Georgia', serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: #1a1916;
-            text-align: center;
-            outline: none;
-            transition: border-color .15s;
-            -webkit-appearance: none;
-        }
-
-            .answer-input:focus {
-                border-color: #1a1916;
-            }
-
-            .answer-input.correct {
-                border-color: #3a7d5e;
-                color: #3a7d5e;
-            }
-
-            .answer-input.wrong {
-                border-color: #b84040;
-                color: #b84040;
-            }
 
         .input-sep {
             font-family: 'Libre Baskerville', 'Georgia', serif;
@@ -205,235 +49,6 @@
             color: #c8c4bc;
             flex-shrink: 0;
             line-height: 1;
-        }
-
-        .submit-btn {
-            background: #1a1916;
-            color: #faf9f7;
-            border: none;
-            border-radius: 2px;
-            padding: 14px 22px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 20px;
-            cursor: pointer;
-            transition: opacity .15s, transform .1s;
-            letter-spacing: .05em;
-            flex-shrink: 0;
-        }
-
-            .submit-btn:hover {
-                opacity: .8;
-            }
-
-            .submit-btn:active {
-                transform: scale(0.97);
-            }
-
-        .feedback {
-            font-size: 15px;
-            min-height: 22px;
-            margin-bottom: 1rem;
-            font-style: italic;
-            text-align: center;
-            letter-spacing: .01em;
-        }
-
-            .feedback.correct {
-                color: #3a7d5e;
-            }
-
-            .feedback.wrong {
-                color: #b84040;
-            }
-
-        .hint-btn {
-            background: transparent;
-            border: 0.5px solid #c8c4bc;
-            border-radius: 2px;
-            padding: 7px 16px;
-            font-family: 'EB Garamond', serif;
-            font-size: 13px;
-            color: #8a8680;
-            cursor: pointer;
-            transition: all .15s;
-            margin-bottom: 2rem;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-        }
-
-            .hint-btn:hover {
-                border-color: #1a1916;
-                color: #1a1916;
-            }
-
-        .progress-bar-wrap {
-            width: 100%;
-            max-width: 420px;
-            height: 1px;
-            background: #c8c4bc;
-            margin-bottom: 2rem;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: #1a1916;
-            transition: width .4s ease;
-        }
-
-        .missed-section {
-            width: 100%;
-            max-width: 420px;
-            margin-top: .5rem;
-        }
-
-        .missed-title {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: .12em;
-            color: #8a8680;
-            margin-bottom: 8px;
-        }
-
-        .missed-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .missed-pill {
-            font-family: 'EB Garamond', serif;
-            font-size: 13px;
-            padding: 4px 12px;
-            border-radius: 1px;
-            background: #fff;
-            border: 0.5px solid #c8a0a0;
-            color: #b84040;
-            letter-spacing: .03em;
-        }
-
-        .done-screen {
-            display: none;
-            text-align: center;
-            width: 100%;
-            max-width: 420px;
-            padding-top: 1rem;
-        }
-
-        .done-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 42px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            letter-spacing: .05em;
-        }
-
-        .done-sub {
-            font-size: 15px;
-            color: #8a8680;
-            margin-bottom: 2.5rem;
-            font-style: italic;
-        }
-
-        .done-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .restart-btn {
-            background: #1a1916;
-            color: #faf9f7;
-            border: none;
-            border-radius: 2px;
-            padding: 13px 28px;
-            font-family: 'EB Garamond', serif;
-            font-size: 15px;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: opacity .15s;
-        }
-
-            .restart-btn:hover {
-                opacity: .8;
-            }
-
-        .missed-only-btn {
-            background: transparent;
-            border: 0.5px solid #c8c4bc;
-            border-radius: 2px;
-            padding: 13px 28px;
-            font-family: 'EB Garamond', serif;
-            font-size: 15px;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            cursor: pointer;
-            color: #1a1916;
-            transition: border-color .15s;
-        }
-
-            .missed-only-btn:hover {
-                border-color: #1a1916;
-            }
-
-        .done-history {
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .done-history-label {
-            font-family: 'EB Garamond', serif;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: .14em;
-            color: #c8c4bc;
-            margin-bottom: 6px;
-        }
-
-        .done-history-row {
-            font-size: 13px;
-            color: #aaa69e;
-            font-style: italic;
-            margin: 2px 0;
-        }
-
-        /* ── MORON CHECKER ── */
-        .mc-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(250,249,247,0.45);
-            backdrop-filter: blur(2px);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            animation: mc-fade-in .25s ease;
-        }
-
-            .mc-overlay.visible {
-                display: flex;
-            }
-
-        @keyframes mc-fade-in {
-            from {
-                opacity: 0;
-                transform: scale(0.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .mc-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: .18em;
-            color: #8a8680;
-            margin-bottom: 14px;
         }
 
         .mc-content {
@@ -453,10 +68,7 @@
             letter-spacing: -0.3px;
         }
 
-            .mc-fact-row strong {
-                font-weight: 700;
-                color: #1a1916;
-            }
+            .mc-fact-row strong { font-weight: 700; color: #1a1916; }
 
         .mc-fact-divider {
             border: none;
@@ -472,290 +84,26 @@
             color: #1a1916;
         }
 
-        .mc-dismiss {
-            margin-top: 18px;
-            font-size: 12px;
-            color: #aaa69e;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            font-style: italic;
-        }
-
-        .mc-hint {
-            margin-top: 10px;
-            font-size: 12px;
-            font-style: italic;
-            color: #c8a060;
-            letter-spacing: .04em;
-            text-align: center;
-        }
-
-        .timer-bar-wrap {
-            width: 100%;
-            max-width: 420px;
-            height: 2px;
-            background: #eeecea;
-            margin-top: -1.5rem;
-            margin-bottom: 1.5rem;
-            border-radius: 1px;
-            overflow: hidden;
-        }
-
-        .timer-bar-fill {
-            height: 100%;
-            background: #c8a060;
-            width: 100%;
-        }
-
-        .settings-row {
-            width: 100%;
-            max-width: 420px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-bottom: 1.5rem;
-            font-size: 12px;
-            color: #8a8680;
-            letter-spacing: .06em;
-            text-transform: uppercase;
-        }
-
-            .settings-row input[type=range] {
-                width: 80px;
-                accent-color: #1a1916;
-            }
-
-            .settings-row span {
-                min-width: 28px;
-                text-align: right;
-            }
-
         @media (max-width: 480px) {
-            body {
-                padding: 0;
-                justify-content: flex-start;
-            }
-
-            .header {
-                margin-bottom: 0;
-                padding: 0.6rem 1rem;
-                border-bottom: 0.5px solid #c8c4bc;
-                max-width: 100%;
-                width: 100%;
-            }
-
-            .title {
-                font-size: 18px;
-                letter-spacing: 0.1em;
-            }
-
-            .subtitle {
-                display: none;
-            }
-
-            .stats-row {
-                max-width: 100%;
-                border-radius: 0;
-                border-left: none;
-                border-right: none;
-                margin-bottom: 0;
-                border-top: none;
-            }
-
-            .stat {
-                padding: 6px 4px;
-            }
-
-            .stat-num {
-                font-size: 18px;
-            }
-
-            .stat-label {
-                font-size: 9px;
-                margin-top: 2px;
-            }
-
-            .progress-bar-wrap {
-                max-width: 100%;
-                margin-bottom: 0;
-                border-radius: 0;
-            }
-
-            .settings-row {
-                max-width: 100%;
-                padding: 0.4rem 1rem;
-                margin-bottom: 0;
-                border-bottom: 0.5px solid #eeecea;
-            }
-
-            #drill-screen {
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 0 1rem;
-            }
-
-            .card {
-                width: 100%;
-                max-width: 100%;
-                border-left: none;
-                border-right: none;
-                border-radius: 0;
-                padding: 1.4rem 1rem 1rem;
-                margin-bottom: 0;
-            }
-
-            .question {
-                font-size: 56px;
-                margin-bottom: 4px;
-            }
-
-            .hint {
-                font-size: 13px;
-            }
-
-            .timer-bar-wrap {
-                max-width: 100%;
-                margin-top: 0;
-                margin-bottom: 0.6rem;
-                border-radius: 0;
-            }
-
-            .input-row {
-                max-width: 100%;
-                margin-bottom: 0.5rem;
-                gap: 6px;
-            }
-
-            .answer-input {
-                font-size: 24px;
-                padding: 14px 6px;
-            }
-
-            .input-sep {
-                font-size: 24px;
-            }
-
-            .submit-btn {
-                padding: 14px 18px;
-                font-size: 22px;
-            }
-
-            .feedback {
-                margin-bottom: 0.4rem;
-                font-size: 14px;
-            }
-
-            .hint-btn {
-                padding: 5px 14px;
-                font-size: 12px;
-                margin-bottom: 0.8rem;
-            }
-
-            .missed-pill {
-                font-size: 12px;
-                padding: 3px 8px;
-            }
-
-            .mc-overlay {
-                padding: 12px;
-            }
-
-            .mc-content {
-                padding: 1rem 1.5rem;
-            }
-
-            .mc-fact-row {
-                font-size: 15px;
-            }
-
-            .mc-fact-answer {
-                font-size: 22px;
-            }
-
-            .mc-label {
-                font-size: 10px;
-                letter-spacing: .1em;
-                margin-bottom: 8px;
-            }
-
-            .mc-dismiss {
-                font-size: 10px;
-                margin-top: 8px;
-            }
-
-            .done-screen {
-                padding: 2rem 1rem;
-            }
-
-            .done-title {
-                font-size: 32px;
-            }
-
-            .done-buttons {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .restart-btn, .missed-only-btn {
-                text-align: center;
-            }
+            .question { font-size: 56px; }
+            .answer-input { font-size: 24px; padding: 14px 6px; }
+            .input-sep { font-size: 24px; }
+            .submit-btn { padding: 14px 18px; }
+            .mc-content { padding: 1rem 1.5rem; }
+            .mc-fact-row { font-size: 15px; }
+            .mc-fact-answer { font-size: 22px; }
         }
 
-        /* ── DARK MODE ── */
-        .sess-active { color: #1a1916; }
-        html.dark { color-scheme: dark; }
-        html.dark body { background: #0d0f12; color: #c8c4bc; }
-        html.dark .header { border-bottom-color: #252830; }
-        html.dark .title { color: #faf9f7; }
-        html.dark .subtitle { color: #6a6660; }
         html.dark .mode-btn { color: #6a6660; }
         html.dark .mode-btn:hover { color: #c8c4bc; }
         html.dark .mode-btn.active { color: #faf9f7; }
         html.dark .mode-sep { color: #3d4148; }
-        html.dark .stats-row { border-color: #252830; }
-        html.dark .stat { border-right-color: #252830; }
-        html.dark .stat-num { color: #faf9f7; }
-        html.dark .stat-label { color: #6a6660; }
-        html.dark .card { background: #13161a; border-color: #252830; }
-        html.dark .question { color: #faf9f7; }
-        html.dark .hint { color: #6a6660; }
-        html.dark .answer-input { background: #13161a; border-color: #252830; color: #faf9f7; }
-        html.dark .answer-input:focus { border-color: #c8c4bc; }
         html.dark .input-sep { color: #3d4148; }
-        html.dark .submit-btn { background: #c8c4bc; color: #0d0f12; }
-        html.dark .hint-btn { border-color: #252830; color: #6a6660; }
-        html.dark .hint-btn:hover { border-color: #c8c4bc; color: #c8c4bc; }
-        html.dark .progress-bar-wrap { background: #252830; }
-        html.dark .progress-bar-fill { background: #c8c4bc; }
-        html.dark .missed-title { color: #6a6660; }
-        html.dark .missed-pill { background: #13161a; }
-        html.dark .done-title { color: #faf9f7; }
-        html.dark .done-sub { color: #6a6660; }
-        html.dark .restart-btn { background: #c8c4bc; color: #0d0f12; }
-        html.dark .missed-only-btn { border-color: #252830; color: #c8c4bc; }
-        html.dark .missed-only-btn:hover { border-color: #c8c4bc; }
-        html.dark .done-history-label { color: #3d4148; }
-        html.dark .done-history-row { color: #6a6660; }
-        html.dark .mc-overlay { background: rgba(13,15,18,0.92); }
-        html.dark .mc-label { color: #6a6660; }
         html.dark .mc-content { background: #13161a; border-color: #252830; }
         html.dark .mc-fact-row { color: #c8c4bc; }
         html.dark .mc-fact-row strong { color: #faf9f7; }
         html.dark .mc-fact-divider { border-top-color: #252830; }
         html.dark .mc-fact-answer { color: #faf9f7; }
-        html.dark .mc-dismiss { color: #6a6660; }
-        html.dark .timer-bar-wrap { background: #252830; }
-        html.dark .settings-row { color: #6a6660; }
-        html.dark .settings-row input[type=range] { accent-color: #c8c4bc; }
-        html.dark .sess-active { color: #faf9f7; }
-        @media (max-width: 480px) {
-            html.dark .settings-row { border-bottom-color: #252830; }
-        }
-        #dark-toggle { position: fixed; top: 1rem; right: 1.5rem; cursor: pointer; font-size: 16px; color: #aaa69e; line-height: 1; user-select: none; z-index: 200; background: none; border: none; padding: 0; }
-        html.dark #dark-toggle { color: #6a6660; }
     </style>
 </head>
 <body>
@@ -776,13 +124,13 @@
     </div>
 
     <div class="stats-row">
-        <div class="stat"><div class="stat-num" id="stat-correct">0</div><div class="stat-label">Correct</div></div>
-        <div class="stat"><div class="stat-num" id="stat-wrong">0</div><div class="stat-label">Missed</div></div>
-        <div class="stat"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">Streak</div></div>
+        <div class="stat"><div class="stat-num" id="s-correct">0</div><div class="stat-label">Correct</div></div>
+        <div class="stat"><div class="stat-num" id="s-wrong">0</div><div class="stat-label">Missed</div></div>
+        <div class="stat"><div class="stat-num" id="s-streak">0</div><div class="stat-label">Streak</div></div>
     </div>
 
     <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+        <div class="progress-bar-fill" id="prog-fill" style="width:0%"></div>
     </div>
 
     <div class="settings-row" style="margin-bottom:.5rem">
@@ -807,7 +155,7 @@
         </div>
 
         <div class="timer-bar-wrap">
-            <div class="timer-bar-fill" id="timer-bar"></div>
+            <div class="timer-bar-fill" id="timer-fill"></div>
         </div>
 
         <div class="input-row">
@@ -844,53 +192,13 @@
         <div class="mc-dismiss">Any key or tap to dismiss</div>
     </div>
 
+    <script src="shared.js"></script>
     <script>
         let currentMode = 'simplify';
         let queue = [], missed = {}, correct = 0, wrong = 0, streak = 0, current = null, total = 0, doneCount = 0;
         let drillStart = null;
-        let mcDuration = 5000;
         let mcVisible = false;
         let sessionSize = 0;
-
-        // ── TIMER — single source of truth ──────────────────────────────
-        // A generation counter kills stale rAF callbacks instantly.
-        // clearTimer() always runs before startTimer() so there's never
-        // more than one active loop at a time.
-        let _timerGen = 0;
-        let _timerTimeout = null;
-        let _timerRaf = null;
-        let _timerStart = null;
-
-        function startMoronTimer() {
-            _clearTimer();
-            const gen = ++_timerGen;
-            _timerStart = performance.now();
-
-            // rAF loop — bails immediately if generation is stale
-            function tick(now) {
-                if (_timerGen !== gen) return;
-                const pct = Math.max(0, 1 - (now - _timerStart) / mcDuration);
-                document.getElementById('timer-bar').style.width = (pct * 100) + '%';
-                if (pct > 0) {
-                    _timerRaf = requestAnimationFrame(tick);
-                }
-            }
-            _timerRaf = requestAnimationFrame(tick);
-
-            _timerTimeout = setTimeout(() => {
-                if (_timerGen !== gen) return;
-                showMC();
-            }, mcDuration);
-        }
-
-        function _clearTimer() {
-            _timerGen++;                          // invalidates any live rAF loop
-            if (_timerTimeout) { clearTimeout(_timerTimeout); _timerTimeout = null; }
-            if (_timerRaf) { cancelAnimationFrame(_timerRaf); _timerRaf = null; }
-            _timerStart = null;
-            document.getElementById('timer-bar').style.width = '100%';
-        }
-        // ────────────────────────────────────────────────────────────────
 
         function clearMC() {
             _clearTimer();
@@ -1022,7 +330,7 @@
 
         function buildMCLabel(fact) {
             const q = formatQuestion(fact);
-            return mcDuration > 2500 ? `yeah — ${q}` : `hint — ${q}`;
+            return mcDur > 2500 ? `yeah — ${q}` : `hint — ${q}`;
         }
 
         // ── FLOW ────────────────────────────────────────────────────────
@@ -1038,7 +346,7 @@
 
         function updateTimerLabel(val) {
             document.getElementById('mc-timer-label').textContent = val + 's';
-            mcDuration = parseInt(val) * 1000;
+            mcDur = parseInt(val) * 1000;
         }
 
         function setSessionSize(n) {
@@ -1049,14 +357,6 @@
                 el.style.fontWeight = n === val ? '600' : '';
             });
             startFresh();
-        }
-
-        function shuffle(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
         }
 
         function startFresh() {
@@ -1097,7 +397,7 @@
             denInp.value = ''; denInp.className = 'answer-input';
             numInp.focus();
             updateProgress(); updateMissed();
-            startMoronTimer();
+            startMCTimer();
         }
 
         function showHint() {
@@ -1151,17 +451,6 @@
             }
         }
 
-        function updateStats() {
-            document.getElementById('stat-correct').textContent = correct;
-            document.getElementById('stat-wrong').textContent = wrong;
-            document.getElementById('stat-streak').textContent = streak;
-        }
-
-        function updateProgress() {
-            const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
-            document.getElementById('progress-bar').style.width = pct + '%';
-        }
-
         function updateMissed() {
             const keys = Object.keys(missed);
             const sec = document.getElementById('missed-section');
@@ -1170,28 +459,6 @@
             document.getElementById('missed-pills').innerHTML = keys.map(k =>
                 `<span class="missed-pill">${formatMissedPill(missed[k].fact)}</span>`
             ).join('');
-        }
-
-        function fmtDrillTime(ms) {
-            const s = Math.round(ms / 1000);
-            return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
-        }
-
-        function saveDrillResult(key, pct, timeStr, sizeLabel) {
-            let hist = [];
-            try { hist = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
-            const d = new Date();
-            hist.unshift({ date: d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), accuracy: pct, time: timeStr, size: sizeLabel });
-            if (hist.length > 5) hist.length = 5;
-            try { localStorage.setItem(key, JSON.stringify(hist)); } catch(e) {}
-            return hist;
-        }
-
-        function renderDrillHistory(hist) {
-            if (!hist.length) return '';
-            return '<div class="done-history"><div class="done-history-label">Recent</div>'
-                + hist.map(r => `<div class="done-history-row">${r.date} &middot; ${r.size || 'Full'} &middot; ${r.accuracy}% &middot; ${r.time}</div>`).join('')
-                + '</div>';
         }
 
         function showDone() {
@@ -1209,11 +476,6 @@
             document.getElementById('missed-only-btn').style.display = Object.keys(missed).length ? 'inline-block' : 'none';
             const hist = saveDrillResult('history_fractions_' + currentMode, pct, timeStr, sessionLabel);
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
-        }
-
-        function toggleDark() {
-            const dark = document.documentElement.classList.toggle('dark');
-            try { localStorage.setItem('dark', dark ? '1' : '0'); } catch(e) {}
         }
 
         document.getElementById('answer-num').addEventListener('keydown', e => {
