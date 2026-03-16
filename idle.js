@@ -106,6 +106,12 @@
             'html.dark .idle-rc{color:#2e3038;}',
             'html.dark .idle-row:hover .idle-rc{color:#6a6660;}',
             'html.dark .idle-rc.can{color:#c8c4bc !important;}',
+            '#idle-reset{font-size:11px;color:#aaa69e;background:none;border:none;',
+            'letter-spacing:.08em;text-transform:uppercase;cursor:pointer;',
+            'margin-top:auto;padding-top:1.5rem;font-family:inherit;text-align:left;}',
+            '#idle-reset:hover{color:#1a1916;}',
+            'html.dark #idle-reset{color:#3a3d45;}',
+            'html.dark #idle-reset:hover{color:#c8c4bc;}',
         ].join('');
         document.head.appendChild(s);
     }
@@ -170,6 +176,18 @@
 
             return { ownedEl: ownedEl, rcEl: rcEl, rateStr: rateStr, costStr: costStr };
         });
+
+        var resetBtn = document.createElement('button');
+        resetBtn.id = 'idle-reset';
+        resetBtn.textContent = 'Reset progress';
+        resetBtn.addEventListener('click', function () {
+            if (!confirm('Reset all progress?')) return;
+            state.points = 0;
+            state.owned = ITEMS.map(function () { return 0; });
+            save();
+            updateUI();
+        });
+        panelEl.appendChild(resetBtn);
 
         document.body.appendChild(panelEl);
     }
