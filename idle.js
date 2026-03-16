@@ -2,12 +2,12 @@
     'use strict';
 
     var ITEMS = [
-        { name: 'Pattern',  cost: 10,      rate: 0.1  },
-        { name: 'Ratio',    cost: 100,     rate: 0.5  },
-        { name: 'Symmetry', cost: 1100,    rate: 3    },
-        { name: 'Axiom',    cost: 9000,    rate: 20   },
-        { name: 'Constant', cost: 70000,   rate: 120  },
-        { name: 'Infinity', cost: 550000,  rate: 700  },
+        { name: 'Item 1',  cost: 10,      rate: 0.1  },
+        { name: 'Item 2',    cost: 100,     rate: 0.5  },
+        { name: 'Item 3', cost: 1100,    rate: 3    },
+        { name: 'Item 4',    cost: 9000,    rate: 20   },
+        { name: 'Item 5', cost: 70000,   rate: 120  },
+        { name: 'Item 6', cost: 550000,  rate: 700  },
     ];
 
     var STATE_KEY = 'idle_state';
