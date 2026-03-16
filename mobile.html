@@ -241,10 +241,11 @@
         html.dark #submit-btn { background: #c8c4bc; color: #0d0f12; }
 
         /* ── MC OVERLAY ──────────────────────────────────────────────────── */
+        /* bottom is set dynamically by fitLayout() to stay above the keyboard */
         #mc-overlay {
             display: none;
             position: fixed;
-            inset: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: 100;
             background: rgba(250,249,247,0.88);
             backdrop-filter: blur(4px);
@@ -268,7 +269,7 @@
         #mc-grid-wrap {
             overflow: auto;
             max-width: 100%;
-            max-height: 55vh;
+            max-height: calc(100% - 84px); /* leave room for label + hint + dismiss */
             -webkit-overflow-scrolling: touch;
         }
 
@@ -619,10 +620,14 @@
 
             const inputRow  = document.getElementById('input-row');
             const qArea     = document.getElementById('question-area');
+            const mcOverlay = document.getElementById('mc-overlay');
             const inputH    = inputRow.offsetHeight || 76;
+            const clampBot  = kbH + inputH;
 
-            inputRow.style.bottom = kbH + 'px';
-            qArea.style.bottom    = (kbH + inputH) + 'px';
+            inputRow.style.bottom  = kbH + 'px';
+            qArea.style.bottom     = clampBot + 'px';
+            // Keep MC overlay within the visible area so the grid is never hidden behind the keyboard
+            mcOverlay.style.bottom = clampBot + 'px';
         }
 
         if (window.visualViewport) {
