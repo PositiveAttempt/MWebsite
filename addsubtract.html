@@ -7,7 +7,9 @@
     <script>try { if (localStorage.getItem('dark') === '1') document.documentElement.classList.add('dark'); } catch (e) { }</script>
     <link rel="stylesheet" href="shared.css">
     <style>
-        .subtitle { margin-bottom: 10px; }
+        .subtitle {
+            margin-bottom: 10px;
+        }
 
         .mode-toggle {
             display: flex;
@@ -16,6 +18,7 @@
             gap: 8px;
             margin-bottom: 10px;
         }
+
         .mode-btn {
             font-family: 'EB Garamond', serif;
             font-size: 11px;
@@ -26,12 +29,31 @@
             transition: color .15s;
             user-select: none;
         }
-        .mode-btn:hover { color: #1a1916; }
-        .mode-btn.active { color: #1a1916; font-weight: 600; }
-        .mode-sep { font-size: 11px; color: #c8c4bc; }
 
-        /* Slightly smaller question to fit 3-digit expressions */
-        .question { font-size: 48px !important; letter-spacing: -1px; }
+            .mode-btn:hover {
+                color: #1a1916;
+            }
+
+            .mode-btn.active {
+                color: #1a1916;
+                font-weight: 600;
+            }
+
+        .mode-sep {
+            font-size: 11px;
+            color: #c8c4bc;
+        }
+
+        /* Larger, centered question to match multiplication layout */
+        .question {
+            font-size: 72px !important;
+            letter-spacing: -2px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 18px;
+        }
 
         /* Strategy card shown in mc-overlay instead of the grid */
         .mc-content {
@@ -43,6 +65,7 @@
             background: #fff;
             min-width: 220px;
         }
+
         .mc-strategy-label {
             font-family: 'EB Garamond', serif;
             font-size: 11px;
@@ -51,18 +74,24 @@
             color: #aaa69e;
             margin-bottom: 8px;
         }
+
         .mc-step {
             font-size: 16px;
             color: #1a1916;
             margin: 5px 0;
             letter-spacing: -0.3px;
         }
-        .mc-step strong { font-weight: 700; }
-        .mc-step.answer {
-            font-size: 28px;
-            font-weight: 700;
-            margin-top: 6px;
-        }
+
+            .mc-step strong {
+                font-weight: 700;
+            }
+
+            .mc-step.answer {
+                font-size: 28px;
+                font-weight: 700;
+                margin-top: 6px;
+            }
+
         .mc-fact-divider {
             border: none;
             border-top: 0.5px solid #c8c4bc;
@@ -71,16 +100,46 @@
         }
 
         /* Dark mode */
-        html.dark .mode-btn { color: #6a6660; }
-        html.dark .mode-btn:hover { color: #c8c4bc; }
-        html.dark .mode-btn.active { color: #faf9f7; }
-        html.dark .mode-sep { color: #3d4148; }
-        html.dark .mc-content { background: #13161a; border-color: #252830; }
-        html.dark .mc-strategy-label { color: #6a6660; }
-        html.dark .mc-step { color: #c8c4bc; }
-        html.dark .mc-step strong { color: #faf9f7; }
-        html.dark .mc-step.answer { color: #faf9f7; }
-        html.dark .mc-fact-divider { border-top-color: #252830; }
+        html.dark .mode-btn {
+            color: #6a6660;
+        }
+
+            html.dark .mode-btn:hover {
+                color: #c8c4bc;
+            }
+
+            html.dark .mode-btn.active {
+                color: #faf9f7;
+            }
+
+        html.dark .mode-sep {
+            color: #3d4148;
+        }
+
+        html.dark .mc-content {
+            background: #13161a;
+            border-color: #252830;
+        }
+
+        html.dark .mc-strategy-label {
+            color: #6a6660;
+        }
+
+        html.dark .mc-step {
+            color: #c8c4bc;
+        }
+
+            html.dark .mc-step strong {
+                color: #faf9f7;
+            }
+
+            html.dark .mc-step.answer {
+                color: #faf9f7;
+            }
+
+        html.dark .mc-fact-divider {
+            border-top-color: #252830;
+        }
     </style>
 </head>
 <body>
@@ -397,9 +456,9 @@
 
             const stepsHTML = rows.map(r => `<div class="mc-step">${r}</div>`).join('');
             return `<div class="mc-strategy-label">${strategyName}</div>
-                                <hr class="mc-fact-divider">
-                                ${stepsHTML}
-                                <div class="mc-step answer">= <strong>${answer}</strong></div>`;
+                                    <hr class="mc-fact-divider">
+                                    ${stepsHTML}
+                                    <div class="mc-step answer">= <strong>${answer}</strong></div>`;
         }
 
         // ── HINT TEXT (shown on "Show hint" click, before submission) ───
