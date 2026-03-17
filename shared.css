@@ -272,10 +272,23 @@ body {
 
 .done-screen {
     display: none;
-    text-align: center;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,25,22,0.18);
+    backdrop-filter: blur(2px);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+}
+
+.done-panel {
+    background: #faf9f7;
+    border: 0.5px solid #c8c4bc;
+    border-radius: 2px;
+    padding: 2.5rem;
     width: 100%;
     max-width: 420px;
-    padding-top: 1rem;
+    text-align: center;
 }
 
 .done-title {
@@ -338,7 +351,7 @@ body {
 
 .done-history {
     margin-top: 2rem;
-    text-align: center;
+    text-align: left;
 }
 
 .done-history-label {
@@ -353,8 +366,8 @@ body {
 .done-history-row {
     font-size: 13px;
     color: #aaa69e;
-    font-style: italic;
     margin: 2px 0;
+    font-style: normal;
 }
 
 /* ── DESKTOP: MORON CHECKER overlay ── */
@@ -673,8 +686,10 @@ body {
         min-width: 0;
     }
 
-    .done-screen {
+    .done-panel {
         padding: 2rem 1rem;
+        border: none;
+        border-radius: 0;
     }
 
     .done-title {
@@ -714,6 +729,7 @@ html.dark .progress-bar-wrap { background: #252830; }
 html.dark .progress-bar-fill { background: #c8c4bc; }
 html.dark .missed-title { color: #6a6660; }
 html.dark .missed-pill { background: #13161a; }
+html.dark .done-panel { background: #0d0f12; border-color: #252830; }
 html.dark .done-title { color: #faf9f7; }
 html.dark .done-sub { color: #6a6660; }
 html.dark .restart-btn { background: #c8c4bc; color: #0d0f12; }
@@ -1067,7 +1083,7 @@ html.dark #dark-toggle { color: #6a6660; }
     font-size: 15px;
     color: #8a8680;
     font-style: italic;
-    margin-bottom: 2rem;
+    margin-bottom: 0.75rem;
 }
 
 .done-btn {
@@ -1105,7 +1121,7 @@ html.dark #dark-toggle { color: #6a6660; }
 
 #done-history {
     margin-top: 1.5rem;
-    text-align: center;
+    text-align: left;
 }
 
 /* ── MOBILE: DARK MODE ── */

@@ -11,7 +11,7 @@
             window.location.replace('division-mobile.html');
         }
     </script>
-    <script>try { if (localStorage.getItem('dark') === '1') document.documentElement.classList.add('dark'); } catch (e) { }</script>
+    <script>try{if(localStorage.getItem('dark')==='1')document.documentElement.classList.add('dark');}catch(e){}</script>
     <link rel="stylesheet" href="shared.css">
 </head>
 <body>
@@ -78,14 +78,16 @@
     </div>
 
     <div class="done-screen" id="done-screen">
-        <div class="done-title" id="done-title">Complete.</div>
-        <div class="done-sub" id="done-sub"></div>
-        <div class="done-sub" id="done-time"></div>
-        <div class="done-buttons">
-            <button class="restart-btn" onclick="startFresh()">Full drill again</button>
-            <button class="missed-only-btn" id="missed-only-btn" onclick="drillMissed()">Missed only</button>
+        <div class="done-panel">
+            <div class="done-title" id="done-title">Complete.</div>
+            <div class="done-sub" id="done-sub"></div>
+            <div class="done-sub" id="done-time"></div>
+            <div class="done-buttons">
+                <button class="restart-btn" onclick="startFresh()">Full drill again</button>
+                <button class="missed-only-btn" id="missed-only-btn" onclick="drillMissed()">Missed only</button>
+            </div>
+            <div id="done-history"></div>
         </div>
-        <div id="done-history"></div>
     </div>
 
     <div class="mc-overlay" id="mc-overlay" tabindex="-1" onclick="dismissMC()">
@@ -96,7 +98,7 @@
     </div>
 
     <script src="shared.js"></script>
-    <script src="idle.js?v=0.2"></script>
+    <script src="idle.js?v=0.1"></script>
     <script>
         function buildTable() {
             let facts = [];
@@ -314,17 +316,18 @@
         function showDone() {
             clearMC();
             document.getElementById('drill-screen').style.display = 'none';
-            document.getElementById('done-screen').style.display = 'block';
+            document.getElementById('done-screen').style.display = 'flex';
             const elapsed = drillStart ? Date.now() - drillStart : 0;
             const timeStr = fmtDrillTime(elapsed);
             const sessionLabel = sessionSize === 0 ? 'Full' : String(sessionSize);
             const t = correct + wrong;
             const pct = t > 0 ? Math.round((correct / t) * 100) : 0;
+            const spm = elapsed > 0 ? Math.round(t / (elapsed / 60000)) : 0;
             document.getElementById('done-title').textContent = pct >= 90 ? 'Excellent.' : pct >= 70 ? 'Good progress.' : 'Keep going.';
             document.getElementById('done-sub').textContent = `${correct} correct, ${wrong} missed — ${pct}% accuracy`;
             document.getElementById('done-time').textContent = timeStr + ' · ' + sessionLabel;
             document.getElementById('missed-only-btn').style.display = Object.keys(missed).length ? 'inline-block' : 'none';
-            const hist = saveDrillResult('history_divide', pct, timeStr, sessionLabel);
+            const hist = saveDrillResult('history_divide', pct, timeStr, sessionLabel, spm);
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
         }
 
@@ -339,9 +342,11 @@
 
         startFresh();
     </script>
-    <div style="text-align:center;margin-top:1.5rem;font-family:'EB Garamond','Times New Roman',serif;font-size:12px;color:#aaa69e;letter-spacing:.08em;">
-        <div style="margin-bottom:4px;text-transform:uppercase;">Made with AI</div>
-        <a href="https://github.com/PositiveAttempt" target="_blank" rel="noopener" style="color:#aaa69e;text-decoration:none;">PositiveAttempt</a>
+
+    <div style="margin-top:1.5rem;font-family:'EB Garamond','Times New Roman',serif;font-size:12px;color:#aaa69e;letter-spacing:.08em;text-align:center;line-height:1.8;">
+        <div>Made with AI</div>
+        <div><a href="https://github.com/PositiveAttempt" target="_blank" rel="noopener" style="color:#aaa69e;text-decoration:none;">PositiveAttempt</a></div>
     </div>
+
 </body>
 </html>

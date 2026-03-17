@@ -79,11 +79,11 @@ function fmtDrillTime(ms) {
     return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
 
-function saveDrillResult(key, pct, timeStr, sizeLabel) {
+function saveDrillResult(key, pct, timeStr, sizeLabel, spm) {
     let hist = [];
     try { hist = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
     const d = new Date();
-    hist.unshift({ date: d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), accuracy: pct, time: timeStr, size: sizeLabel });
+    hist.unshift({ date: d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), accuracy: pct, time: timeStr, size: sizeLabel, spm: spm });
     if (hist.length > 5) hist.length = 5;
     try { localStorage.setItem(key, JSON.stringify(hist)); } catch(e) {}
     return hist;
@@ -92,7 +92,7 @@ function saveDrillResult(key, pct, timeStr, sizeLabel) {
 function renderDrillHistory(hist) {
     if (!hist.length) return '';
     return '<div class="done-history"><div class="done-history-label">Recent</div>'
-        + hist.map(r => `<div class="done-history-row">${r.date} &middot; ${r.size || 'Full'} &middot; ${r.accuracy}% &middot; ${r.time}</div>`).join('')
+        + hist.map(r => `<div class="done-history-row">${r.date} &middot; ${r.size || 'Full'} &middot; ${r.accuracy}% &middot; ${r.time}${r.spm != null ? ' &middot; ' + r.spm + ' spm' : ''}</div>`).join('')
         + '</div>';
 }
 
