@@ -2,12 +2,12 @@
     'use strict';
 
     var ITEMS = [
-        { name: 'Item 1',  cost: 10,      rate: 0.1  },
-        { name: 'Item 2',    cost: 100,     rate: 0.5  },
-        { name: 'Item 3', cost: 1100,    rate: 3    },
-        { name: 'Item 4',    cost: 9000,    rate: 20   },
-        { name: 'Item 5', cost: 70000,   rate: 120  },
-        { name: 'Item 6', cost: 550000,  rate: 700  },
+        { name: 'Item 1',  cost: 10,      rate: 0.01  },
+        { name: 'Item 2',    cost: 100,     rate: 0.05  },
+        { name: 'Item 3', cost: 11000,    rate: 0.03    },
+        { name: 'Item 4',    cost: 90000,    rate: 0.2   },
+        { name: 'Item 5', cost: 700000,   rate: 1.20  },
+        { name: 'Item 6', cost: 5500000,  rate: 70.0  },
     ];
 
     var STATE_KEY = 'idle_state';
@@ -255,7 +255,14 @@
             orig.apply(this, arguments);
             var fb = document.getElementById('feedback');
             if (fb && fb.className.indexOf('correct') !== -1) {
-                award(1);
+                var path = window.location.pathname;
+                var award_amount =
+                    path.indexOf('index') !== -1 ? 0.1 :
+                        path.indexOf('division') !== -1 ? 0.25 :
+                            path.indexOf('addsubtract') !== -1 ? 0.1 :
+                                path.indexOf('fractions') !== -1 ? 5 :
+                                    0.1;
+                award(award_amount);
                 save();
             }
         };
