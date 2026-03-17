@@ -209,15 +209,7 @@
 
     function award(n) {
         state.points += n;
-        // Briefly hint the toggle icon
-        if (!open) {
-            toggleEl.style.transition = 'none';
-            toggleEl.style.color = '#8a8680';
-            var t = toggleEl;
-            setTimeout(function () {
-                t.style.transition = '';
-                t.style.color = '';
-            }, 350);
+  
         }
     }
 
