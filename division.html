@@ -168,6 +168,7 @@
             document.getElementById('feedback').className = 'feedback';
             const inp = document.getElementById('answer-input');
             inp.value = ''; inp.className = 'answer-input'; inp.focus();
+            updateProgress();
             updateMissed();
             startMCTimer();
         }
