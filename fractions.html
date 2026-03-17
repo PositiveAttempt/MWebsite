@@ -197,7 +197,7 @@
     </div>
 
     <script src="shared.js"></script>
-    <script src="idle.js?v=0.1"></script>
+    <script src="idle.js?v=0.2"></script>
     <script>
         let currentMode = 'simplify';
         let queue = [], missed = {}, correct = 0, wrong = 0, streak = 0, current = null, total = 0, doneCount = 0;
@@ -292,16 +292,16 @@
                 const bigNum = Math.round(fact.rNum * mult / fact.rDen);
                 const div = gcd(bigNum, mult);
                 return `<div class="mc-fact-row">${dec} = ${bigNum}/${mult}</div>
-                            <div class="mc-fact-row">÷ ${div}</div>
-                            <hr class="mc-fact-divider">
-                            <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
-                            ${visual}`;
+                                <div class="mc-fact-row">÷ ${div}</div>
+                                <hr class="mc-fact-divider">
+                                <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
+                                ${visual}`;
             }
             return `<div class="mc-fact-row">${fact.num} ÷ ${fact.factor} = <strong>${fact.rNum}</strong></div>
-                        <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
-                        <hr class="mc-fact-divider">
-                        <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
-                        ${visual}`;
+                            <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
+                            <hr class="mc-fact-divider">
+                            <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
+                            ${visual}`;
         }
 
         function buildPieSVG(n, d) {

@@ -172,7 +172,7 @@
     </div>
 
     <script src="shared.js"></script>
-    <script src="idle.js?v=0.1"></script>
+    <script src="idle.js?v=0.2"></script>
 
     <script>
         let currentMode = 'singles';
@@ -397,9 +397,9 @@
 
             const stepsHTML = rows.map(r => `<div class="mc-step">${r}</div>`).join('');
             return `<div class="mc-strategy-label">${strategyName}</div>
-                            <hr class="mc-fact-divider">
-                            ${stepsHTML}
-                            <div class="mc-step answer">= <strong>${answer}</strong></div>`;
+                                <hr class="mc-fact-divider">
+                                ${stepsHTML}
+                                <div class="mc-step answer">= <strong>${answer}</strong></div>`;
         }
 
         // ── HINT TEXT (shown on "Show hint" click, before submission) ───
