@@ -2,12 +2,12 @@
     'use strict';
 
     var ITEMS = [
-        { name: 'Item 1',  cost: 10,      rate: 0.01  },
-        { name: 'Item 2',    cost: 100,     rate: 0.05  },
-        { name: 'Item 3', cost: 11000,    rate: 0.03    },
-        { name: 'Item 4',    cost: 90000,    rate: 0.2   },
-        { name: 'Item 5', cost: 700000,   rate: 1.20  },
-        { name: 'Item 6', cost: 5500000,  rate: 70.0  },
+        { name: 'Item 1', cost: 10, rate: 0.01 },
+        { name: 'Item 2', cost: 100, rate: 0.05 },
+        { name: 'Item 3', cost: 11000, rate: 0.03 },
+        { name: 'Item 4', cost: 90000, rate: 0.2 },
+        { name: 'Item 5', cost: 700000, rate: 1.20 },
+        { name: 'Item 6', cost: 5500000, rate: 70.0 },
     ];
 
     var STATE_KEY = 'idle_state';
@@ -33,7 +33,7 @@
                 }
             }
         }
-    } catch (e) {}
+    } catch (e) { }
 
     function passiveRate() {
         return ITEMS.reduce(function (acc, item, i) {
@@ -48,7 +48,7 @@
                 owned: state.owned,
                 ts: Date.now(),
             }));
-        } catch (e) {}
+        } catch (e) { }
     }
 
     function fmt(n) {
@@ -66,7 +66,7 @@
 
     // DOM refs
     var panelEl, toggleEl, totalEl, psEl, rowRefs = [];
-    var open = false;
+    var open = localStorage.getItem('idle_panel_open') === '1';
 
     function injectStyles() {
         var s = document.createElement('style');
@@ -112,6 +112,19 @@
             '#idle-reset:hover{color:#1a1916;}',
             'html.dark #idle-reset{color:#3a3d45;}',
             'html.dark #idle-reset:hover{color:#c8c4bc;}',
+            '@keyframes idle-smoke{',
+            '0%  {transform:translate(0px, 0px)    scale(1);    opacity:1;}',
+            '20% {transform:translate(3px,-24px)   scale(1.03); opacity:1;}',
+            '45% {transform:translate(-4px,-54px)  scale(1.07); opacity:1;}',
+            '70% {transform:translate(5px,-86px)   scale(1.11); opacity:1;}',
+            '100%{transform:translate(-2px,-118px) scale(1.14); opacity:1;}',
+            '}',
+            '.idle-float{position:fixed;pointer-events:none;z-index:400;',
+            'font-family:"EB Garamond","Times New Roman",serif;',
+            'font-size:16px;letter-spacing:.06em;color:#aaa69e;',
+            'transform-origin:center bottom;',
+            'animation:idle-smoke 2.6s cubic-bezier(0.25,0.1,0.35,1) forwards;}',
+            'html.dark .idle-float{color:#4a4d55;}',
         ].join('');
         document.head.appendChild(s);
     }
@@ -190,6 +203,10 @@
         panelEl.appendChild(resetBtn);
 
         document.body.appendChild(panelEl);
+
+        // Restore open state
+        panelEl.classList.toggle('on', open);
+        toggleEl.classList.toggle('on', open);
     }
 
     function togglePanel() {
@@ -197,6 +214,8 @@
         panelEl.classList.toggle('on', open);
         toggleEl.classList.toggle('on', open);
         if (open) updateUI();
+        localStorage.setItem('idle_panel_open', open ? '1' : '0');
+
     }
 
     function buy(i) {
@@ -207,11 +226,31 @@
         updateUI();
     }
 
+    function spawnFloat(n) {
+        var q = document.getElementById('question');
+        var x, y;
+        if (q) {
+            var r = q.getBoundingClientRect();
+            x = r.left + r.width / 2 - 20;
+            y = r.top + r.height * 0;
+        } else {
+            x = window.innerWidth / 2;
+            y = window.innerHeight * 0.4;
+        }
+        var el = document.createElement('span');
+        el.className = 'idle-float';
+        el.textContent = '+' + (n < 1 ? n.toFixed(2) : n % 1 === 0 ? n.toFixed(0) : n.toFixed(1));
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        document.body.appendChild(el);
+        el.addEventListener('animationend', function () { el.remove(); });
+    }
+
     function award(n) {
         state.points += n;
-  
-        }
-    
+        if (open) spawnFloat(n);
+
+    }
 
     function updateUI() {
         if (!totalEl) return;
@@ -254,7 +293,7 @@
                             path.indexOf('addsubtract') !== -1 ? (window.idleQuestionValue || 0.3) :
                                 path.indexOf('fractions') !== -1 ? 5 :
                                     0.1;
-                
+
                 award(award_amount);
                 save();
             }
