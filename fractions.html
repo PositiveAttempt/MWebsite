@@ -438,6 +438,7 @@
                 document.getElementById('feedback').textContent = streak >= 4 ? `${streak + 1} in a row` : 'Correct';
                 document.getElementById('feedback').className = 'feedback correct';
                 correct++; streak++; doneCount++;
+                checkLeafState();
                 if (missed[key]) { missed[key].count--; if (missed[key].count <= 0) delete missed[key]; }
                 updateStats();
                 updateProgress();
