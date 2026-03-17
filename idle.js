@@ -259,7 +259,7 @@
                 var award_amount =
                     path.indexOf('index') !== -1 ? 0.1 :
                         path.indexOf('division') !== -1 ? 0.25 :
-                            path.indexOf('addsubtract') !== -1 ? 0.1 :
+                            path.indexOf('addsubtract') !== -1 ? (window.idleQuestionValue || 0.3) :
                                 path.indexOf('fractions') !== -1 ? 5 :
                                     0.1;
                 award(award_amount);

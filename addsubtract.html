@@ -175,6 +175,7 @@
     <script src="idle.js"></script>
     <script>
         let currentMode = 'singles';
+        window.idleQuestionValue = 0.3;
         let queue = [], missed = {}, correct = 0, wrong = 0, streak = 0, current = null, total = 0, doneCount = 0;
         let drillStart = null;
         let mcVisible = false;
@@ -444,6 +445,7 @@
         // ── FLOW ────────────────────────────────────────────────────────
 
         function setMode(mode) {
+            window.idleQuestionValue = mode === 'singles' ? 0.3 : 1;
             currentMode = mode;
             document.querySelectorAll('.mode-btn').forEach(btn =>
                 btn.classList.toggle('active', btn.dataset.mode === mode)
