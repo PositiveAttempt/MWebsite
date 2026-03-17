@@ -367,6 +367,7 @@ body {
     font-size: 13px;
     color: #aaa69e;
     margin: 2px 0;
+    font-style: normal;
 }
 
 /* ── DESKTOP: MORON CHECKER overlay ── */
@@ -1120,7 +1121,7 @@ html.dark #dark-toggle { color: #6a6660; }
 
 #done-history {
     margin-top: 1.5rem;
-    text-align: center;
+    text-align: left;
 }
 
 /* ── MOBILE: DARK MODE ── */
