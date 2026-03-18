@@ -542,6 +542,7 @@
             letter-spacing: .1em;
             font-family: "EB Garamond","Times New Roman",serif;
             color: #aaa69e;
+            min-width: 24px;
         }
         html.dark #idle-topbar-gen-track { background: #252830; }
         html.dark #idle-topbar-gen-bar { background: #c8c4bc; }
@@ -592,6 +593,7 @@
             // ── Mobile: inject compact stats into topbar ───────────────────────
             var topbarStats = document.createElement('div');
             topbarStats.id = 'idle-topbar-stats';
+            topbarStats.style.display = open ? 'flex' : 'none';
 
             var topbarGenTrack = document.createElement('div');
             topbarGenTrack.id = 'idle-topbar-gen-track';
@@ -614,13 +616,15 @@
             toggleEl = document.createElement('button');
             toggleEl.id = 'idle-toggle';
             toggleEl.setAttribute('aria-label', 'idle');
-            toggleEl.textContent = '\u25cf';
+            toggleEl.textContent = open ? '\u25c9' : '\u25cf';
             toggleEl.style.bottom = '88px';
             toggleEl.style.right = '14px';
             toggleEl.classList.toggle('on', open);
             toggleEl.addEventListener('click', function () {
                 open = !open;
                 setVisible(open);
+                topbarStats.style.display = open ? 'flex' : 'none';
+                toggleEl.textContent = open ? '\u25c9' : '\u25cf';
                 localStorage.setItem('idle_panel_open', open ? '1' : '0');
                 toggleEl.classList.toggle('on', open);
             });
@@ -791,6 +795,10 @@
                 canvasEl.style.height = CH + 'px';
                 canvasEl.height = CH;
                 positionCanvas();
+                if (toggleEl) {
+                    var kbH = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+                    toggleEl.style.bottom = (kbH + 96) + 'px';
+                }
             }
             window.visualViewport.addEventListener('resize', updateCanvasToViewport);
             window.visualViewport.addEventListener('scroll', updateCanvasToViewport);
