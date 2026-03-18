@@ -365,7 +365,7 @@
         #idle-panel {
             position: fixed;
             top: 0; right: 0; bottom: 0;
-            width: 216px;
+            width: ${MOBILE ? 140 : 216}px;
             background: rgba(250,249,247,0.82);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
@@ -566,7 +566,17 @@
         toggleEl.addEventListener('click', togglePanel);
         toggleEl.textContent = locked ? '\u25c9' : '\u25cf';
         toggleEl.classList.toggle('locked', locked);
-        document.body.appendChild(toggleEl);
+        if (MOBILE) {
+            toggleEl.style.position = 'static';
+            toggleEl.style.fontSize = '18px';
+            toggleEl.style.padding = '4px 6px';
+            var topbarDark = document.getElementById('topbar-dark');
+            if (topbarDark && topbarDark.parentNode) {
+                topbarDark.parentNode.insertBefore(toggleEl, topbarDark);
+            }
+        } else {
+            document.body.appendChild(toggleEl);
+        }
 
         panelEl = document.createElement('div');
         panelEl.id = 'idle-panel';
