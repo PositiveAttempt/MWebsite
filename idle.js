@@ -518,6 +518,34 @@
         html.dark #idle-gen-bar { background: #c8c4bc; }
         html.dark #idle-lock { color: #3a3d45; border-color: #252830; }
         html.dark #idle-lock:hover, html.dark #idle-lock.on { color: #c8c4bc; border-color: #6a6660; }
+
+        #idle-topbar-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+        }
+        #idle-topbar-gen-track {
+            width: 48px;
+            height: 1px;
+            background: #e0ddd8;
+        }
+        #idle-topbar-gen-bar {
+            height: 100%;
+            width: 0%;
+            background: #1a1916;
+            transition: width .08s linear;
+        }
+        #idle-topbar-money {
+            font-size: 11px;
+            letter-spacing: .1em;
+            font-family: "EB Garamond","Times New Roman",serif;
+            color: #aaa69e;
+        }
+        html.dark #idle-topbar-gen-track { background: #252830; }
+        html.dark #idle-topbar-gen-bar { background: #c8c4bc; }
+        html.dark #idle-topbar-money { color: #6a6660; }
     `;
         document.head.appendChild(s);
     }
@@ -560,63 +588,93 @@
         ship.worldY = CH * 0.25; 
         updateShipDom();
 
-        toggleEl = document.createElement('button');
-        toggleEl.id = 'idle-toggle';
-        toggleEl.setAttribute('aria-label', 'idle');
-        toggleEl.addEventListener('click', togglePanel);
-        toggleEl.textContent = locked ? '\u25c9' : '\u25cf';
-        toggleEl.classList.toggle('locked', locked);
         if (MOBILE) {
-            toggleEl.style.position = 'static';
-            toggleEl.style.fontSize = '18px';
-            toggleEl.style.padding = '4px 6px';
+            // ── Mobile: inject compact stats into topbar ───────────────────────
+            var topbarStats = document.createElement('div');
+            topbarStats.id = 'idle-topbar-stats';
+
+            var topbarGenTrack = document.createElement('div');
+            topbarGenTrack.id = 'idle-topbar-gen-track';
+            genBarEl = document.createElement('div');
+            genBarEl.id = 'idle-topbar-gen-bar';
+            topbarGenTrack.appendChild(genBarEl);
+            topbarStats.appendChild(topbarGenTrack);
+
+            moneyEl = document.createElement('div');
+            moneyEl.id = 'idle-topbar-money';
+            moneyEl.textContent = money;
+            topbarStats.appendChild(moneyEl);
+
             var topbarDark = document.getElementById('topbar-dark');
             if (topbarDark && topbarDark.parentNode) {
-                topbarDark.parentNode.insertBefore(toggleEl, topbarDark);
+                topbarDark.parentNode.insertBefore(topbarStats, topbarDark);
             }
-        } else {
+
+            // ── Mobile: canvas toggle button above submit button ───────────────
+            toggleEl = document.createElement('button');
+            toggleEl.id = 'idle-toggle';
+            toggleEl.setAttribute('aria-label', 'idle');
+            toggleEl.textContent = '\u25cf';
+            toggleEl.style.bottom = '88px';
+            toggleEl.style.right = '14px';
+            toggleEl.classList.toggle('on', open);
+            toggleEl.addEventListener('click', function () {
+                open = !open;
+                setVisible(open);
+                localStorage.setItem('idle_panel_open', open ? '1' : '0');
+                toggleEl.classList.toggle('on', open);
+            });
             document.body.appendChild(toggleEl);
+        } else {
+            // ── Desktop: existing panel + toggle ──────────────────────────────
+            toggleEl = document.createElement('button');
+            toggleEl.id = 'idle-toggle';
+            toggleEl.setAttribute('aria-label', 'idle');
+            toggleEl.addEventListener('click', togglePanel);
+            toggleEl.textContent = locked ? '\u25c9' : '\u25cf';
+            toggleEl.classList.toggle('locked', locked);
+            document.body.appendChild(toggleEl);
+
+            panelEl = document.createElement('div');
+            panelEl.id = 'idle-panel';
+
+            spmEl = document.createElement('div');
+            spmEl.id = 'idle-spm';
+            panelEl.appendChild(spmEl);
+
+            var genLabel = document.createElement('div');
+            genLabel.id = 'idle-gen-label';
+            genLabel.textContent = 'gen';
+            panelEl.appendChild(genLabel);
+
+            var genTrack = document.createElement('div');
+            genTrack.id = 'idle-gen-track';
+            genBarEl = document.createElement('div');
+            genBarEl.id = 'idle-gen-bar';
+            genTrack.appendChild(genBarEl);
+            panelEl.appendChild(genTrack);
+
+            var moneyLabel = document.createElement('div');
+            moneyLabel.id = 'idle-money-label';
+            moneyLabel.textContent = 'money';
+            panelEl.appendChild(moneyLabel);
+
+            moneyEl = document.createElement('div');
+            moneyEl.id = 'idle-money';
+            moneyEl.textContent = money;
+            panelEl.appendChild(moneyEl);
+
+            lockBtn = document.createElement('button');
+            lockBtn.id = 'idle-lock';
+            lockBtn.textContent = locked ? 'Unpin view' : 'Pin view';
+            lockBtn.classList.toggle('on', locked);
+            lockBtn.addEventListener('click', toggleLock);
+            panelEl.appendChild(lockBtn);
+
+            document.body.appendChild(panelEl);
+            panelEl.classList.toggle('on', open);
+            toggleEl.classList.toggle('on', open);
         }
-
-        panelEl = document.createElement('div');
-        panelEl.id = 'idle-panel';
-
-        spmEl = document.createElement('div');
-        spmEl.id = 'idle-spm';
-        panelEl.appendChild(spmEl);
-
-        var genLabel = document.createElement('div');
-        genLabel.id = 'idle-gen-label';
-        genLabel.textContent = 'gen';
-        panelEl.appendChild(genLabel);
-
-        var genTrack = document.createElement('div');
-        genTrack.id = 'idle-gen-track';
-        genBarEl = document.createElement('div');
-        genBarEl.id = 'idle-gen-bar';
-        genTrack.appendChild(genBarEl);
-        panelEl.appendChild(genTrack);
-
-        var moneyLabel = document.createElement('div');
-        moneyLabel.id = 'idle-money-label';
-        moneyLabel.textContent = 'money';
-        panelEl.appendChild(moneyLabel);
-
-        moneyEl = document.createElement('div');
-        moneyEl.id = 'idle-money';
-        moneyEl.textContent = money;
-        panelEl.appendChild(moneyEl);
-
-        lockBtn = document.createElement('button');
-        lockBtn.id = 'idle-lock';
-        lockBtn.textContent = locked ? 'Unpin view' : 'Pin view';
-        lockBtn.classList.toggle('on', locked);
-        lockBtn.addEventListener('click', toggleLock);
-        panelEl.appendChild(lockBtn);
-
-        document.body.appendChild(panelEl);
-        panelEl.classList.toggle('on', open);
-        toggleEl.classList.toggle('on', open);
     }
 
     // ── visibility ────────────────────────────────────────────────────────────
@@ -729,8 +787,9 @@
             function updateCanvasToViewport() {
                 var vv = window.visualViewport;
                 CH = Math.round(vv.height);
-                canvasEl.height = CH;
+                canvasEl.style.top = Math.round(vv.offsetTop) + 'px';
                 canvasEl.style.height = CH + 'px';
+                canvasEl.height = CH;
                 positionCanvas();
             }
             window.visualViewport.addEventListener('resize', updateCanvasToViewport);
