@@ -14,7 +14,7 @@
     //
     // ─────────────────────────────────────────────────────────────────────────
 
-    var panelEl, toggleEl, spmEl, genBarEl, lockBtn, shipEl, enemyEl, canvasEl, ctx;
+    var panelEl, toggleEl, spmEl, genBarEl, lockBtn, shipEl, enemyEl, moneyEl, canvasEl, ctx;
 
     var correctCount = 0;
     var sessionStart = Date.now();
@@ -50,15 +50,24 @@
     var gen = 0;
     var GEN_MAX = 100;
     var GEN_AWARD = 28;   // per correct answer
-    var GEN_COST = 4;    // per bullet fired
+    var GEN_COST = 1;    // per bullet fired
     var GEN_IDLE = 0.3;  // per second passive drain (near-zero)
 
-    // ── combat ────────────────────────────────────────────────────────────────
+    //money
+    var money = parseInt(localStorage.getItem('idle_money') || '0', 10);
+    var MONEY_PER_KILL = 5;
+
+
+    // ── combat ────────────────────────────────────────────────────────────────    
     var bullets = [];
     var enemy = null;
     var obstacles = [];
     var lastFireMs = 0;
     var enemyRespawnTimer = 0;
+
+    var burnFrame = 0;
+    var burnTimer = 0;
+    var BURN_INTERVAL = 0.56;  // seconds between frame swap, tune to taste
 
     // ── canvas positioning ────────────────────────────────────────────────────
     function positionCanvas() {
@@ -88,7 +97,6 @@
             enemyEl.style.left = Math.round(cardLeft + enemy.x - SHIP_W / 2) + 'px';
             enemyEl.style.right = '';
             enemyEl.style.top = Math.round(enemy.y - SHIP_H / 2) + 'px';
-            enemyEl.style.transform = 'rotate(180deg)';
             enemyEl.style.filter = enemy.flash > 0 ? 'brightness(2)' : 'none';
             enemyEl.style.display = 'block';
         } else {
@@ -105,6 +113,8 @@
 
     // ── level / enemy spawn ───────────────────────────────────────────────────
     function spawnEnemy() {
+        var w = enemyEl.naturalWidth || 16;
+        var h = enemyEl.naturalHeight || 16;
         enemy = {
             x: CW * 0.2 + Math.random() * CW * 0.6,
             y: -SHIP_H,
@@ -113,28 +123,36 @@
             vy: 70 + scrollSpeed() * 0.25,
             phase: Math.random() * Math.PI * 2,
             flash: 0,
+            hw: w * 1.5,   // half-width hit radius (natural px × display scale ÷ 2)
+            hh: h * 1.5,   // half-height hit radius
         };
     }
 
     function spawnLevel() {
         // 1 or 2 obstacles in the middle zone
         obstacles = [];
-        var count = Math.random() > 0.45 ? 2 : 1;
-        for (var i = 0; i < count; i++) {
-            obstacles.push({
-                x: CW * 0.18 + Math.random() * CW * 0.64,
-                y: CH * 0.30 + Math.random() * CH * 0.32,
-                r: 14 + Math.random() * 13,
-            });
-        }
         spawnEnemy();
         bullets = [];
     }
 
     // ── steering — 2D vector forces ───────────────────────────────────────────
     function steer(dt) {
-        if (flightState === 'grounded') return;
+        if (flightState === 'grounded' || flightState === 'ignition') return;
 
+        if (flightState === 'cruising') {
+            var spd = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
+            if (spd > 20) {   // only animate when actually moving
+                burnTimer += dt;
+                if (burnTimer >= BURN_INTERVAL) {
+                    burnTimer = 0;
+                    burnFrame = 1 - burnFrame;
+                    shipEl.src = burnFrame === 0 ? 'assets/ship-cruise.png' : 'assets/ship-cruise2.png';
+                }
+            } else {
+                shipEl.src = 'assets/ship-cruise.png';  // settled back to frame 1
+                burnFrame = 0;
+            }
+        }
         var fx = 0, fy = 0;
 
         if (enemy) {
@@ -148,19 +166,7 @@
             fy += (CH * 0.75 - ship.y) * 0.9;
         }
 
-        // repel from each obstacle — forces the ship to arc around them
-        for (var i = 0; i < obstacles.length; i++) {
-            var o = obstacles[i];
-            var odx = ship.x - o.x;
-            var ody = ship.y - o.y;
-            var od = Math.sqrt(odx * odx + ody * ody) || 1;
-            var repR = o.r + 68;
-            if (od < repR) {
-                var str = ((repR - od) / repR) * 310;
-                fx += (odx / od) * str;
-                fy += (ody / od) * str;
-            }
-        }
+
 
         // canvas boundary forces
         var m = 38;
@@ -201,7 +207,7 @@
     }
 
     function updateCombat(now, dt) {
-        if (flightState === 'grounded') return;
+        if (flightState === 'grounded' || flightState === 'ignition') return;
 
         // near-zero idle drain — barely visible, so sums clearly top it up
         gen = Math.max(0, gen - GEN_IDLE * dt);
@@ -236,6 +242,12 @@
                         enemy.flash = 0.14;
                         bullets.splice(j, 1);
                         if (enemy.hp <= 0) {
+                            var streakMult = 1 + (window.streak || 0) * 0.1;
+                            var earned = Math.round(MONEY_PER_KILL * streakMult);
+                            money += earned;
+                            localStorage.setItem('idle_money', money);
+                            if (moneyEl) moneyEl.textContent = money;
+                            if (open || locked) spawnKillFloat(enemy.x, enemy.y, earned);
                             enemy = null;
                             enemyRespawnTimer = 1.5;
                             break;
@@ -285,28 +297,6 @@
             ctx.fillRect(bullets[i].x - 1.5, bullets[i].y - 5, 3, 9);
         }
 
-        // obstacles — lumpy hexagons
-        for (var k = 0; k < obstacles.length; k++) {
-            var o = obstacles[k];
-            ctx.save();
-            ctx.translate(o.x, o.y);
-            ctx.beginPath();
-            for (var s = 0; s <= 6; s++) {
-                var ang = (s / 6) * Math.PI * 2;
-                var r = o.r * (0.82 + 0.18 * Math.sin(s * 2.3 + 0.5));
-                s === 0
-                    ? ctx.moveTo(Math.cos(ang) * r, Math.sin(ang) * r)
-                    : ctx.lineTo(Math.cos(ang) * r, Math.sin(ang) * r);
-            }
-            ctx.closePath();
-            ctx.strokeStyle = dark ? 'rgba(100,96,90,0.5)' : 'rgba(110,106,98,0.4)';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            ctx.restore();
-        }
-
-        // enemy — ship.png flipped 180° to face down toward the player
-        
     }
 
     // ── gen bar ───────────────────────────────────────────────────────────────
@@ -345,76 +335,183 @@
     // ── styles ────────────────────────────────────────────────────────────────
     function injectStyles() {
         var s = document.createElement('style');
-        s.textContent = [
-            '#idle-toggle{position:fixed;bottom:1.2rem;right:1.4rem;background:none;border:none;',
-            'cursor:pointer;font-size:36px;color:#d8d4ce;line-height:1;padding:4px;z-index:300;',
-            'user-select:none;transition:color .25s;font-family:serif;}',
-            '#idle-toggle:hover,#idle-toggle.on{color:#8a8680;}',
-            '#idle-toggle.locked{font-size:28px;}',
+        s.textContent = `
+        #idle-toggle {
+            position: fixed;
+            bottom: 1.2rem;
+            right: 1.4rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 36px;
+            color: #d8d4ce;
+            line-height: 1;
+            padding: 4px;
+            z-index: 300;
+            user-select: none;
+            transition: color .25s;
+            font-family: serif;
+        }
+        #idle-toggle:hover, #idle-toggle.on { color: #8a8680; }
+        #idle-toggle.locked { font-size: 28px; }
 
-            '#idle-panel{position:fixed;top:0;right:0;bottom:0;width:216px;',
-            'background:rgba(250,249,247,0.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);',
-            'border-left:0.5px solid #c8c4bc;transform:translateX(100%);',
-            'transition:transform .26s ease;z-index:250;display:flex;flex-direction:column;',
-            'padding:2.2rem 1.4rem 1.5rem;',
-            'font-family:"EB Garamond","Times New Roman",serif;color:#1a1916;}',
-            '#idle-panel.on{transform:translateX(0);}',
+        #idle-panel {
+            position: fixed;
+            top: 0; right: 0; bottom: 0;
+            width: 216px;
+            background: rgba(250,249,247,0.82);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-left: 0.5px solid #c8c4bc;
+            transform: translateX(100%);
+            transition: transform .26s ease;
+            z-index: 250;
+            display: flex;
+            flex-direction: column;
+            padding: 2.2rem 1.4rem 1.5rem;
+            font-family: "EB Garamond","Times New Roman",serif;
+            color: #1a1916;
+        }
+        #idle-panel.on { transform: translateX(0); }
 
-            '#idle-spm{font-size:14px;color:#aaa69e;letter-spacing:.08em;font-style:italic;',
-            'min-height:16px;margin-bottom:1.8rem;}',
+        #idle-spm {
+            font-size: 14px;
+            color: #aaa69e;
+            letter-spacing: .08em;
+            font-style: italic;
+            min-height: 16px;
+            margin-bottom: 1.8rem;
+        }
 
-            '#idle-gen-label{font-size:10px;text-transform:uppercase;letter-spacing:.16em;',
-            'color:#c8c4bc;margin-bottom:7px;}',
-            '#idle-gen-track{width:100%;height:2px;background:#e8e4dc;overflow:hidden;}',
-            '#idle-gen-bar{height:100%;width:0%;background:#1a1916;transition:width .08s linear;}',
+        #idle-gen-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .16em;
+            color: #c8c4bc;
+            margin-bottom: 7px;
+        }
+        #idle-gen-track { width: 100%; height: 2px; background: #e8e4dc; overflow: hidden; }
+        #idle-gen-bar { height: 100%; width: 0%; background: #1a1916; transition: width .08s linear; }
 
-            '#idle-lock{font-size:10px;color:#c8c4bc;background:none;',
-            'border:0.5px solid #e0ddd8;border-radius:1px;padding:4px 10px;',
-            'letter-spacing:.1em;text-transform:uppercase;cursor:pointer;',
-            'margin-top:auto;font-family:inherit;align-self:flex-start;',
-            'transition:color .15s,border-color .15s;}',
-            '#idle-lock:hover,#idle-lock.on{color:#1a1916;border-color:#8a8680;}',
+        #idle-money-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .16em;
+            color: #c8c4bc;
+            margin-bottom: 4px;
+            margin-top: 1.4rem;
+        }
+        #idle-money { font-size: 22px; letter-spacing: .04em; color: #1a1916; line-height: 1; }
+        html.dark #idle-money-label { color: #3d4148; }
+        html.dark #idle-money { color: #c8c4bc; }
 
-            '.card{background:rgba(255,255,255,0.15) !important;backdrop-filter:none;}',
-            'html.dark .card{background:rgba(13,15,18,0.15) !important;}',
+        #idle-lock {
+            font-size: 10px;
+            color: #c8c4bc;
+            background: none;
+            border: 0.5px solid #e0ddd8;
+            border-radius: 1px;
+            padding: 4px 10px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: auto;
+            font-family: inherit;
+            align-self: flex-start;
+            transition: color .15s, border-color .15s;
+        }
+        #idle-lock:hover, #idle-lock.on { color: #1a1916; border-color: #8a8680; }
 
-            '#idle-canvas{position:fixed;top:0;left:0;height:100%;z-index:1;pointer-events:none;',
-            'opacity:0;transition:opacity 1.2s ease;}',
-            '#idle-canvas.on{opacity:0.35;}',
+        .card { background: rgba(255,255,255,0.15) !important; backdrop-filter: none; }
+        html.dark .card { background: rgba(13,15,18,0.15) !important; }
 
-            '#idle-ship{position:fixed;pointer-events:none;z-index:3;width:48px;height:auto;',
-            'opacity:0;transition:opacity 1.4s ease;',
-            'image-rendering:pixelated;image-rendering:crisp-edges;}',
-            '#idle-ship.on{opacity:0.6;}',
+        #idle-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+        #idle-canvas.on { opacity: 0.5; }
 
-            '#idle-enemy{position:fixed;pointer-events:none;z-index:2;width:48px;height:auto;',
-            'opacity:0;transition:opacity 1.4s ease;',  
-            'image-rendering:pixelated;image-rendering:crisp-edges;transform-origin:center center;}',
-            '#idle-enemy.on{opacity:0.6;}',
+        #idle-ship {
+            position: fixed;
+            pointer-events: none;
+            z-index: 3;
+            width: 48px;
+            height: auto;
+            opacity: 0;
+            transition: opacity 1.4s ease;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        #idle-ship.on { opacity: 0.95; }
 
-            '@keyframes idle-smoke{',
-            '0%  {transform:translate(0px,0px)    scale(1);   opacity:1;}',
-            '20% {transform:translate(3px,-24px)  scale(1.03);opacity:1;}',
-            '45% {transform:translate(-4px,-54px) scale(1.07);opacity:1;}',
-            '70% {transform:translate(5px,-86px)  scale(1.11);opacity:1;}',
-            '100%{transform:translate(-2px,-118px)scale(1.14);opacity:1;}',
-            '}',
-            '.idle-float{position:fixed;pointer-events:none;z-index:400;',
-            'font-family:"EB Garamond","Times New Roman",serif;',
-            'font-size:16px;letter-spacing:.06em;color:#aaa69e;transform-origin:center bottom;',
-            'animation:idle-smoke 2.6s cubic-bezier(0.25,0.1,0.35,1) forwards;}',
-            'html.dark .idle-float{color:#4a4d55;}',
+        #idle-enemy {
+            position: fixed;
+            pointer-events: none;
+            z-index: 2;
+            width: 48px;
+            height: auto;
+            opacity: 0;
+            transition: opacity 1.4s ease;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            transform-origin: center center;
+        }
+        #idle-enemy.on { opacity: 0.85; }
 
-            'html.dark #idle-panel{background:rgba(13,15,18,0.85);border-left-color:#252830;color:#c8c4bc;}',
-            'html.dark #idle-toggle{color:#2e3038;}',
-            'html.dark #idle-toggle:hover,html.dark #idle-toggle.on{color:#6a6660;}',
-            'html.dark #idle-spm{color:#6a6660;}',
-            'html.dark #idle-gen-label{color:#3d4148;}',
-            'html.dark #idle-gen-track{background:#252830;}',
-            'html.dark #idle-gen-bar{background:#c8c4bc;}',
-            'html.dark #idle-lock{color:#3a3d45;border-color:#252830;}',
-            'html.dark #idle-lock:hover,html.dark #idle-lock.on{color:#c8c4bc;border-color:#6a6660;}',
-        ].join('');
+        @keyframes idle-kill {
+            0%   { transform: translate(0px,0px)   scale(1);    opacity: 1; }
+            30%  { transform: translate(2px,-18px)  scale(1.05); opacity: 1; }
+            70%  { transform: translate(-3px,-38px) scale(1.09); opacity: 0.7; }
+            100% { transform: translate(1px,-52px)  scale(1.12); opacity: 0; }
+        }
+        .idle-float-kill {
+            position: fixed;
+            pointer-events: none;
+            z-index: 400;
+            font-family: "EB Garamond","Times New Roman",serif;
+            font-size: 14px;
+            letter-spacing: .1em;
+            color: #1a1916;
+            transform-origin: center bottom;
+            animation: idle-kill 3.5s cubic-bezier(0.2,0.1,0.4,1) forwards;
+        }
+        html.dark .idle-float-kill { color: #c8c4bc; }
+
+        @keyframes idle-smoke {
+            0%   { transform: translate(0px,0px)     scale(1);    opacity: 1; }
+            20%  { transform: translate(3px,-24px)   scale(1.03); opacity: 1; }
+            45%  { transform: translate(-4px,-54px)  scale(1.07); opacity: 1; }
+            70%  { transform: translate(5px,-86px)   scale(1.11); opacity: 1; }
+            100% { transform: translate(-2px,-118px) scale(1.14); opacity: 1; }
+        }
+        .idle-float {
+            position: fixed;
+            pointer-events: none;
+            z-index: 400;
+            font-family: "EB Garamond","Times New Roman",serif;
+            font-size: 16px;
+            letter-spacing: .06em;
+            color: #aaa69e;
+            transform-origin: center bottom;
+            animation: idle-smoke 2.6s cubic-bezier(0.25,0.1,0.35,1) forwards;
+        }
+        html.dark .idle-float { color: #4a4d55; }
+
+        html.dark #idle-panel { background: rgba(13,15,18,0.85); border-left-color: #252830; color: #c8c4bc; }
+        html.dark #idle-toggle { color: #2e3038; }
+        html.dark #idle-toggle:hover, html.dark #idle-toggle.on { color: #6a6660; }
+        html.dark #idle-spm { color: #6a6660; }
+        html.dark #idle-gen-label { color: #3d4148; }
+        html.dark #idle-gen-track { background: #252830; }
+        html.dark #idle-gen-bar { background: #c8c4bc; }
+        html.dark #idle-lock { color: #3a3d45; border-color: #252830; }
+        html.dark #idle-lock:hover, html.dark #idle-lock.on { color: #c8c4bc; border-color: #6a6660; }
+    `;
         document.head.appendChild(s);
     }
 
@@ -438,7 +535,7 @@
     function buildEnemy() {
         enemyEl = document.createElement('img');
         enemyEl.id = 'idle-enemy';
-        enemyEl.src = 'assets/ship.png';
+        enemyEl.src = 'assets/enemy1.png';
         document.body.appendChild(enemyEl);
         if (open || locked) enemyEl.classList.add('on');  
 
@@ -452,7 +549,7 @@
         positionCanvas();
 
         ship.x = CW / 2;
-        ship.y = CH * 0.95;
+        ship.y = CH * 0.80;
         ship.worldY = CH * 0.25; 
         updateShipDom();
 
@@ -482,6 +579,16 @@
         genBarEl.id = 'idle-gen-bar';
         genTrack.appendChild(genBarEl);
         panelEl.appendChild(genTrack);
+
+        var moneyLabel = document.createElement('div');
+        moneyLabel.id = 'idle-money-label';
+        moneyLabel.textContent = 'money';
+        panelEl.appendChild(moneyLabel);
+
+        moneyEl = document.createElement('div');
+        moneyEl.id = 'idle-money';
+        moneyEl.textContent = money;
+        panelEl.appendChild(moneyEl);
 
         lockBtn = document.createElement('button');
         lockBtn.id = 'idle-lock';
@@ -521,7 +628,7 @@
     }
 
     // ── float ─────────────────────────────────────────────────────────────────
-    function spawnFloat(n) {
+    function spawnEnergyFloat() {
         var q = document.getElementById('question');
         var x, y;
         if (q) {
@@ -534,9 +641,19 @@
         }
         var el = document.createElement('span');
         el.className = 'idle-float';
-        el.textContent = '+' + (n < 1 ? n.toFixed(2) : n % 1 === 0 ? n.toFixed(0) : n.toFixed(1));
+        el.textContent = '⁂' + GEN_AWARD;
         el.style.left = x + 'px';
         el.style.top = y + 'px';
+        document.body.appendChild(el);
+        el.addEventListener('animationend', function () { el.remove(); });
+    }
+
+    function spawnKillFloat(canvasX, canvasY, amount) {
+        var el = document.createElement('span');
+        el.className = 'idle-float-kill';
+        el.textContent = '+' + amount;
+        el.style.left = Math.round(cardLeft + canvasX - 16) + 'px';
+        el.style.top = Math.round(canvasY) + 'px';
         document.body.appendChild(el);
         el.addEventListener('animationend', function () { el.remove(); });
     }
@@ -546,17 +663,22 @@
         if (mins < 0.1) return '0.0';
         return (correctCount / mins).toFixed(1);
     }
-
     function takeoff() {
-        if (flightState !== 'grounded') return;
-        flightState = 'cruising';
+        if (flightState === 'grounded') {
+            flightState = 'ignition';
+            shipEl.src = 'assets/ship-burn.png';
+            return;
+        }
+        if (flightState === 'ignition') {
+            flightState = 'cruising';
+            shipEl.src = 'assets/ship-cruise.png';
+        }
     }
-
     function award(n) {
         correctCount++;
         gen = Math.min(GEN_MAX, gen + GEN_AWARD);
         takeoff();
-        if (open || locked) spawnFloat(n);
+        if (open || locked) spawnEnergyFloat();
     }
 
     function updateUI() {
