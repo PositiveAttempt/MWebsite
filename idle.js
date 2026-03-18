@@ -807,7 +807,7 @@
                 }
             }
             window.visualViewport.addEventListener('resize', updateCanvasToViewport);
-            window.visualViewport.addEventListener('scroll', updateCanvasToViewport);
+
             updateCanvasToViewport();
         }
         patchSubmitAnswer();
