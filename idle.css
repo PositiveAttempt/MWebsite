@@ -644,6 +644,13 @@ html.dark #idle-drawer {
     color: #c8c4bc;
 }
 
+html.dark body.idle-minimal #idle-canvas {
+    filter: invert(1);
+}
+html.dark body.idle-minimal #idle-ship {
+    filter: invert(1);
+}   
+
 /* ══════════════════════════════════════════════════════════════════════════════
    MINIMAL MODE — body.idle-minimal
    Toggled by idle.js setVisible() when the canvas panel opens or locks.
