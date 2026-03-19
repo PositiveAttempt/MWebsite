@@ -328,8 +328,8 @@ body.idle-minimal {
 }
 
 /* Hide chrome */
-body.idle-minimal .header        { display: none; }
 body.idle-minimal #dark-toggle   { display: none; }
+body.idle-minimal .page-footer   { display: none; }
 body.idle-minimal .settings-row  { display: none; }
 body.idle-minimal .progress-bar-wrap { display: none; }
 body.idle-minimal .timer-bar-wrap    { display: none; }
@@ -344,7 +344,6 @@ body.idle-minimal .stats-row {
     margin-bottom: 0.5rem;
 }
 body.idle-minimal .stat { border: none; }
-body.idle-minimal .stat:not(:last-child) { display: none; }
 
 /* Card — transparent, borderless */
 body.idle-minimal .card {
