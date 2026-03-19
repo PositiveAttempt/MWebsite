@@ -357,8 +357,7 @@
 
     // ── styles ────────────────────────────────────────────────────────────────
     function injectStyles() {
-        document.documentElement.style.setProperty('--idle-panel-w', (MOBILE ? 140 : 216) + 'px');
-        document.documentElement.style.setProperty('--idle-ship-w', (48 * SCALE) + 'px');
+        // All styles moved to idle.css
     }
 
     // ── loadout slots ─────────────────────────────────────────────────────────
@@ -572,10 +571,10 @@
             document.body.appendChild(panelEl);
             panelEl.classList.toggle('on', open);
             toggleEl.classList.toggle('on', open);
-
-            document.body.classList.toggle('idle-minimal', open || locked);
-
         }
+
+        // Set initial minimal state to match open/locked state from localStorage
+        document.body.classList.toggle('idle-minimal', open || locked);
     }
 
     // ── visibility ────────────────────────────────────────────────────────────
