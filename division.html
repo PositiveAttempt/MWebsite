@@ -49,7 +49,7 @@
     </div>
 
     <div class="settings-row">
-        <label for="mc-timer-range">Moron checker</label>
+        <label for="mc-timer-range">Hint Timer</label>
         <input type="range" id="mc-timer-range" min="3" max="15" value="5" step="1" oninput="updateTimerLabel(this.value)">
         <span id="mc-timer-label">5s</span>
     </div>
@@ -191,7 +191,7 @@
             if (!current) return;
             const [qa, qb] = current;
             const product = qa * qb;
-            const label = mcDur > 2500 ? `yeah — ${product} ÷ ${qa}` : `moron checker — ${product} ÷ ${qa}`;
+            const label = mcDur > 2500 ? `yeah — ${product} ÷ ${qa}` : `hint timer — ${product} ÷ ${qa}`;
             document.getElementById('mc-label').textContent = label;
             buildGrid(qa, qb);
             document.getElementById('mc-hint').textContent = getHint(qa, qb);
