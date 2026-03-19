@@ -228,7 +228,7 @@ body {
 .progress-bar-wrap {
     width: 100%;
     max-width: 420px;
-    height: 1px;
+    height: 25px;
     background: #e8e4dc;
     margin-bottom: 2rem;
     overflow: hidden;

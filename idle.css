@@ -575,7 +575,12 @@ body.idle-minimal {
     }
 
     body.idle-minimal .progress-bar-wrap {
-        display: none;
+        position: fixed;
+        bottom: calc(-50vh + 70rem);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 420px;
     }
 
     body.idle-minimal .timer-bar-wrap {
