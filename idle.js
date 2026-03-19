@@ -15,6 +15,7 @@
     // ─────────────────────────────────────────────────────────────────────────
 
     var panelEl, toggleEl, spmEl, genBarEl, armourBarEl, lockBtn, shipEl, enemyEl, moneyEl, canvasEl, ctx;
+    var mobileGenEl, mobileShieldsEl, mobileProgFill, drawerEl, drawerShipEl;
 
     var correctCount = 0;
     var sessionStart = Date.now();
@@ -23,6 +24,8 @@
 
     var MOBILE = window.innerWidth < 768;
     var SCALE = MOBILE ? 0.5 : 1;
+    var suppressTooltips = MOBILE;
+    var drawerOpen = localStorage.getItem('idle_drawer_open') === '1';
 
     var PANEL_W = 216;
     var CANVAS_GAP = 50;
@@ -51,6 +54,7 @@
     //   correct answer tops it up, each bullet fired drains it,
     //   barely ticks down when idle so you can see sums refilling it
     var gen = 0;
+    var shields = 100;
     var GEN_MAX = 100;
     var GEN_AWARD = 28;   // per correct answer
     var GEN_COST = 1;    // per bullet fired
@@ -348,6 +352,16 @@
             updateShipDom();
             updateEnemyDom();  
             updateGenBar();
+            if (MOBILE) {
+                if (mobileGenEl) mobileGenEl.textContent = Math.round(gen);
+                if (mobileShieldsEl) mobileShieldsEl.textContent = Math.round(shields);
+                if (mobileProgFill) {
+                    var _dc = typeof doneCount !== 'undefined' ? doneCount : 0;
+                    var _ql = typeof queue !== 'undefined' && queue ? queue.length : 0;
+                    mobileProgFill.style.width = (_dc + _ql > 0 ? (_dc / (_dc + _ql)) * 100 : 0) + '%';
+                }
+                if (drawerShipEl) drawerShipEl.src = shipEl.src;
+            }
         }
 
         if (open) updateUI();
@@ -367,6 +381,7 @@
         document.body.appendChild(tooltip);
 
         function showTip(anchorEl, lines) {
+            if (suppressTooltips) return;
             tooltip.innerHTML = lines.join('<br>');
             tooltip.style.display = 'block';
             var r = anchorEl.getBoundingClientRect();
@@ -374,7 +389,7 @@
             tooltip.style.left = 'auto';
             tooltip.style.right = (window.innerWidth - r.left + 6) + 'px';
         }
-        function hideTip() { tooltip.style.display = 'none'; }
+        function hideTip() { if (suppressTooltips) return; tooltip.style.display = 'none'; }
 
         function makeWeaponSlot(weapon, slotNum) {
             var el = document.createElement('div');
@@ -474,13 +489,41 @@
             topbarStats.id = 'idle-topbar-stats';
             topbarStats.style.display = open ? 'flex' : 'none';
 
-            var topbarGenTrack = document.createElement('div');
-            topbarGenTrack.id = 'idle-topbar-gen-track';
-            genBarEl = document.createElement('div');
-            genBarEl.id = 'idle-topbar-gen-bar';
-            topbarGenTrack.appendChild(genBarEl);
-            topbarStats.appendChild(topbarGenTrack);
+            // GEN item
+            var genItem = document.createElement('div');
+            genItem.className = 'idle-topbar-item';
+            var genLbl = document.createElement('div');
+            genLbl.className = 'idle-topbar-item-label';
+            genLbl.textContent = 'GEN';
+            mobileGenEl = document.createElement('div');
+            mobileGenEl.className = 'idle-topbar-item-val';
+            mobileGenEl.textContent = '0';
+            genItem.appendChild(genLbl);
+            genItem.appendChild(mobileGenEl);
+            topbarStats.appendChild(genItem);
 
+            // SH item
+            var shItem = document.createElement('div');
+            shItem.className = 'idle-topbar-item';
+            var shLbl = document.createElement('div');
+            shLbl.className = 'idle-topbar-item-label';
+            shLbl.textContent = 'SH';
+            mobileShieldsEl = document.createElement('div');
+            mobileShieldsEl.className = 'idle-topbar-item-val';
+            mobileShieldsEl.textContent = '100';
+            shItem.appendChild(shLbl);
+            shItem.appendChild(mobileShieldsEl);
+            topbarStats.appendChild(shItem);
+
+            // Progress bar — two raw inline-styled divs, no class names
+            var progTrack = document.createElement('div');
+            progTrack.style.cssText = 'width:60px;height:2px;background:#e8e4dc;overflow:hidden;flex-shrink:0';
+            mobileProgFill = document.createElement('div');
+            mobileProgFill.style.cssText = 'height:100%;width:0%;background:#c8c4bc;transition:width .3s ease';
+            progTrack.appendChild(mobileProgFill);
+            topbarStats.appendChild(progTrack);
+
+            // Money — keep as-is
             moneyEl = document.createElement('div');
             moneyEl.id = 'idle-topbar-money';
             moneyEl.textContent = money;
@@ -490,6 +533,39 @@
             if (topbarDark && topbarDark.parentNode) {
                 topbarDark.parentNode.insertBefore(topbarStats, topbarDark);
             }
+
+            // ── Mobile: drawer toggle (before dark toggle) ─────────────────────
+            var drawerToggleBtn = document.createElement('button');
+            drawerToggleBtn.id = 'idle-drawer-toggle';
+            drawerToggleBtn.setAttribute('aria-label', 'loadout drawer');
+            drawerToggleBtn.textContent = '\u229e';
+            drawerToggleBtn.addEventListener('click', function () {
+                drawerOpen = !drawerOpen;
+                if (drawerEl) drawerEl.style.transform = drawerOpen ? 'translateX(0)' : 'translateX(-100%)';
+                localStorage.setItem('idle_drawer_open', drawerOpen ? '1' : '0');
+            });
+            if (topbarDark && topbarDark.parentNode) {
+                topbarDark.parentNode.insertBefore(drawerToggleBtn, topbarDark);
+            }
+
+            // ── Mobile: left drawer ────────────────────────────────────────────
+            drawerEl = document.createElement('div');
+            drawerEl.id = 'idle-drawer';
+            drawerEl.style.transform = drawerOpen ? 'translateX(0)' : 'translateX(-100%)';
+
+            // Ship diagram box — centred ship img mirroring flight state
+            var diagBox = document.createElement('div');
+            diagBox.id = 'idle-ship-diagram';
+            diagBox.className = 'idle-drawer-shipbox';
+            var diagImg = document.createElement('img');
+            diagImg.src = 'assets/ship.png';
+            diagImg.style.cssText = 'width:32px;image-rendering:pixelated;image-rendering:crisp-edges';
+            drawerShipEl = diagImg;
+            diagBox.appendChild(diagImg);
+            drawerEl.appendChild(diagBox);
+
+            buildLoadoutSlots(drawerEl);
+            document.body.appendChild(drawerEl);
 
             // ── Mobile: canvas toggle button above submit button ───────────────
             toggleEl = document.createElement('button');
