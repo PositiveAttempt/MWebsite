@@ -419,17 +419,17 @@
     <!-- MODE DROPDOWN -->
     <div id="menu-backdrop"></div>
     <nav id="mode-menu" role="menu">
-        <a href="mobile.html"           class="mode-item"         role="menuitem"><span class="mode-sym">×</span>Multiply</a>
-        <a href="division-mobile.html"  class="mode-item"         role="menuitem"><span class="mode-sym">÷</span>Division</a>
-        <a href="addsubtract-mobile.html" class="mode-item"       role="menuitem"><span class="mode-sym">+</span>Add / Sub</a>
+        <a href="mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">×</span>Multiply</a>
+        <a href="division-mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">÷</span>Division</a>
+        <a href="addsubtract-mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">+</span>Add / Sub</a>
         <a href="fractions-mobile.html" class="mode-item current" role="menuitem"><span class="mode-sym">½</span>Fractions</a>
     </nav>
 
     <!-- SUB-MODE ROW -->
     <div id="sub-mode-row">
         <button class="sub-btn active" data-mode="simplify" onclick="setMode('simplify')">Simplify</button>
-        <button class="sub-btn"        data-mode="ratio"    onclick="setMode('ratio')">Ratio</button>
-        <button class="sub-btn"        data-mode="decimal"  onclick="setMode('decimal')">Decimal</button>
+        <button class="sub-btn" data-mode="ratio" onclick="setMode('ratio')">Ratio</button>
+        <button class="sub-btn" data-mode="decimal" onclick="setMode('decimal')">Decimal</button>
     </div>
 
     <!-- PROGRESS HAIRLINE -->
@@ -451,10 +451,10 @@
 
     <!-- Hidden DOM nodes required by shared.js -->
     <div id="timer-wrap" style="display:none"><div id="timer-fill"></div></div>
-    <div id="hint-text"  style="display:none"></div>
+    <div id="hint-text" style="display:none"></div>
     <span id="s-correct" style="display:none">0</span>
-    <span id="s-wrong"   style="display:none">0</span>
-    <span id="s-streak"  style="display:none">0</span>
+    <span id="s-wrong" style="display:none">0</span>
+    <span id="s-streak" style="display:none">0</span>
 
     <!-- MORON CHECKER OVERLAY -->
     <div id="mc-overlay" tabindex="-1">
@@ -538,16 +538,16 @@
                 const bigNum = Math.round(fact.rNum * mult / fact.rDen);
                 const div = gcd(bigNum, mult);
                 return `<div class="mc-fact-row">${dec} = ${bigNum}/${mult}</div>
-                        <div class="mc-fact-row">÷ ${div}</div>
-                        <hr class="mc-fact-divider">
-                        <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
-                        ${visual}`;
+                            <div class="mc-fact-row">÷ ${div}</div>
+                            <hr class="mc-fact-divider">
+                            <div class="mc-fact-row mc-fact-answer">${fact.rNum}/${fact.rDen}</div>
+                            ${visual}`;
             }
             return `<div class="mc-fact-row">${fact.num} ÷ ${fact.factor} = <strong>${fact.rNum}</strong></div>
-                    <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
-                    <hr class="mc-fact-divider">
-                    <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
-                    ${visual}`;
+                        <div class="mc-fact-row">${fact.den} ÷ ${fact.factor} = <strong>${fact.rDen}</strong></div>
+                        <hr class="mc-fact-divider">
+                        <div class="mc-fact-row mc-fact-answer">${fact.rNum} ${sep} ${fact.rDen}</div>
+                        ${visual}`;
         }
 
         function buildPieSVG(n, d) {
@@ -687,8 +687,8 @@
             const timeStr = fmtDrillTime(elapsed);
             const t = correct + wrong, pct = t > 0 ? Math.round((correct / t) * 100) : 0;
             document.getElementById('done-title').textContent = pct >= 90 ? 'Excellent.' : pct >= 70 ? 'Good progress.' : 'Keep going.';
-            document.getElementById('done-sub').textContent   = `${correct} correct, ${wrong} missed — ${pct}%`;
-            document.getElementById('done-time').textContent  = timeStr;
+            document.getElementById('done-sub').textContent = `${correct} correct, ${wrong} missed — ${pct}%`;
+            document.getElementById('done-time').textContent = timeStr;
             document.getElementById('missed-btn').style.display = Object.keys(missed).length ? 'block' : 'none';
             const hist = saveDrillResult('history_fractions_' + currentMode, pct, timeStr, 'Full');
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
@@ -716,14 +716,14 @@
         });
 
         document.getElementById('mc-overlay').addEventListener('click', dismissMC);
-        document.getElementById('submit-btn').addEventListener('click', function() { window.submitAnswer(); });
+        document.getElementById('submit-btn').addEventListener('click', function () { window.submitAnswer(); });
         document.getElementById('restart-btn').addEventListener('click', startFresh);
         document.getElementById('missed-btn').addEventListener('click', drillMissed);
 
         // ── MODE MENU ──────────────────────────────────────────────────────────
 
-        const modeBtn      = document.getElementById('mode-btn');
-        const modeMenu     = document.getElementById('mode-menu');
+        const modeBtn = document.getElementById('mode-btn');
+        const modeMenu = document.getElementById('mode-menu');
         const menuBackdrop = document.getElementById('menu-backdrop');
 
         function openMenu() {
@@ -745,17 +745,17 @@
         // ── VISUAL VIEWPORT LAYOUT ─────────────────────────────────────────────
 
         function fitLayout() {
-            const vv  = window.visualViewport;
+            const vv = window.visualViewport;
             const kbH = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
 
-            const inputRow  = document.getElementById('input-row');
-            const qArea     = document.getElementById('question-area');
+            const inputRow = document.getElementById('input-row');
+            const qArea = document.getElementById('question-area');
             const mcOverlay = document.getElementById('mc-overlay');
-            const inputH    = inputRow.offsetHeight || 76;
-            const clampBot  = kbH + inputH;
+            const inputH = inputRow.offsetHeight || 76;
+            const clampBot = kbH + inputH;
 
-            inputRow.style.bottom  = kbH + 'px';
-            qArea.style.bottom     = clampBot + 'px';
+            inputRow.style.bottom = kbH + 'px';
+            qArea.style.bottom = clampBot + 'px';
             mcOverlay.style.bottom = clampBot + 'px';
         }
 
@@ -767,6 +767,8 @@
 
         startFresh();
     </script>
+    <script src="config.js"></script>
+
     <script src="idle.js"></script>
 </body>
 </html>

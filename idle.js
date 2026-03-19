@@ -48,11 +48,11 @@
     var ship = { x: 0, y: 0, vx: 0, vy: 0, worldY: 0 };
 
     // ── generator ─────────────────────────────────────────────────────────────
-    var GEN_MAX = 100;
+    var GEN_MAX = IDLE_CONFIG.gen.max;
     var gen = GEN_MAX;
-    var GEN_AWARD = 5;
-    var GEN_COST = 1;
-    var GEN_IDLE = 0.3;
+    var GEN_AWARD = IDLE_CONFIG.gen.award;
+    var GEN_COST = IDLE_CONFIG.gen.shotCost;
+    var GEN_IDLE = IDLE_CONFIG.gen.idleDrain;
 
     // ── money ─────────────────────────────────────────────────────────────────
     var money = parseInt(localStorage.getItem('idle_money') || '0', 10);
@@ -63,11 +63,14 @@
     var secondaryWeapon = null;   // set to missile object when purchased
 
     // ── shields / armour ──────────────────────────────────────────────────────
-    var SHIELD_MAX = 80;
-    var ARMOUR_MAX = 20;
+    var SHIELD_MAX = IDLE_CONFIG.shields.max;
+    var ARMOUR_MAX = IDLE_CONFIG.armour.max;
     var shields = SHIELD_MAX;
     var armour = ARMOUR_MAX;
-    var SHIELD_REGEN = 12;
+    var SHIELD_REGEN = IDLE_CONFIG.shields.regen;          // shields restored per second during regen
+    var SHIELD_REGEN_GEN_COST = IDLE_CONFIG.shields.regenGenCost; // gen drained per second while shields are regenerating
+    var SHIELD_REGEN_DELAY = IDLE_CONFIG.shields.regenDelay;     // seconds after last hit before regen begins
+    var shieldRegenTimer = SHIELD_REGEN_DELAY; // counts up; regen active when >= SHIELD_REGEN_DELAY
 
     // ── projectiles ───────────────────────────────────────────────────────────
     var bullets = [];
@@ -186,8 +189,8 @@
             el: el,
             x: CW * 0.2 + Math.random() * CW * 0.6,
             y: -SHIP_H,
-            hp: type === 1 ? 3 : 9,
-            maxHp: type === 1 ? 3 : 9,
+            hp: type === 1 ? IDLE_CONFIG.enemy.type1Hp : IDLE_CONFIG.enemy.type2Hp,
+            maxHp: type === 1 ? IDLE_CONFIG.enemy.type1Hp : IDLE_CONFIG.enemy.type2Hp,
             vy: 70 + scrollSpeed() * 0.25,
             phase: Math.random() * Math.PI * 2,
             flash: 0,
@@ -413,6 +416,7 @@
         if (gameOver) return;
         var overflow = Math.max(0, amount - shields);
         shields = Math.max(0, shields - amount);
+        shieldRegenTimer = 0; // reset grace window on every hit
         if (overflow > 0) {
             armour = Math.max(0, armour - overflow);
             if (armour <= 0) triggerGameOver();
@@ -424,8 +428,13 @@
         if (gameOver) return;
         if (flightState === 'grounded' || flightState === 'ignition') return;
 
-        // shield regen scales with gen level
-        shields = Math.min(SHIELD_MAX, shields + SHIELD_REGEN * (gen / GEN_MAX) * dt);
+        // shield regen: wait SHIELD_REGEN_DELAY after last hit, then regen at gen cost
+        shieldRegenTimer += dt;
+        if (shieldRegenTimer >= SHIELD_REGEN_DELAY && shields < SHIELD_MAX && gen > 0) {
+            var regenAmount = SHIELD_REGEN * dt;
+            shields = Math.min(SHIELD_MAX, shields + regenAmount);
+            gen = Math.max(0, gen - SHIELD_REGEN_GEN_COST * dt);
+        }
 
         gen = Math.max(0, gen - GEN_IDLE * dt);
 
@@ -878,12 +887,32 @@
 
             buildLoadoutSlots(panelEl);
 
+            var bottomRow = document.createElement('div');
+            bottomRow.id = 'idle-bottom-row';
+
             lockBtn = document.createElement('button');
             lockBtn.id = 'idle-lock';
             lockBtn.textContent = locked ? 'Unpin view' : 'Pin view';
             lockBtn.classList.toggle('on', locked);
             lockBtn.addEventListener('click', toggleLock);
-            panelEl.appendChild(lockBtn);
+            bottomRow.appendChild(lockBtn);
+
+            var resetBtn = document.createElement('button');
+            resetBtn.id = 'idle-reset';
+            resetBtn.textContent = '\u21ba';
+            resetBtn.title = 'Reset progress';
+            resetBtn.addEventListener('click', function () {
+                localStorage.removeItem('idle_money');
+                localStorage.removeItem('idle_missile_unlocked');
+                money = 0;
+                if (moneyEl) moneyEl.textContent = money;
+                secondaryWeapon = null;
+                updateSecondarySlotEl();
+                resetGame();
+            });
+            bottomRow.appendChild(resetBtn);
+
+            panelEl.appendChild(bottomRow);
 
             document.body.appendChild(panelEl);
             panelEl.classList.toggle('on', open);
@@ -932,7 +961,7 @@
         bullets = [];
         missiles = [];
         enemyBullets = [];
-        enemyRespawnTimer = 10;
+        enemyRespawnTimer = IDLE_CONFIG.enemy.resetSpawnDelay;
         waveIndex = 0;
         waveTimer = 0;
         if (secondaryWeapon) { secondaryWeapon.timer = 0; secondaryWeapon._last = 0; }
@@ -1083,7 +1112,7 @@
 
         patchSubmitAnswer();
         spawnLevel();
-        enemyRespawnTimer = 17;
+        enemyRespawnTimer = IDLE_CONFIG.enemy.initialSpawnDelay;
         ship.worldY = CH * 0.25;
         updateUI();
         lastRaf = performance.now();

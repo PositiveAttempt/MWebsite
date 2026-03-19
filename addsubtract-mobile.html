@@ -397,10 +397,10 @@
     <!-- MODE DROPDOWN -->
     <div id="menu-backdrop"></div>
     <nav id="mode-menu" role="menu">
-        <a href="mobile.html"              class="mode-item"         role="menuitem"><span class="mode-sym">×</span>Multiply</a>
-        <a href="division-mobile.html"     class="mode-item"         role="menuitem"><span class="mode-sym">÷</span>Division</a>
-        <a href="addsubtract-mobile.html"  class="mode-item current" role="menuitem"><span class="mode-sym">+</span>Add / Sub</a>
-        <a href="fractions-mobile.html"    class="mode-item"         role="menuitem"><span class="mode-sym">½</span>Fractions</a>
+        <a href="mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">×</span>Multiply</a>
+        <a href="division-mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">÷</span>Division</a>
+        <a href="addsubtract-mobile.html" class="mode-item current" role="menuitem"><span class="mode-sym">+</span>Add / Sub</a>
+        <a href="fractions-mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">½</span>Fractions</a>
     </nav>
 
     <!-- SUB-MODE ROW -->
@@ -428,10 +428,10 @@
 
     <!-- Hidden DOM nodes required by shared.js -->
     <div id="timer-wrap" style="display:none"><div id="timer-fill"></div></div>
-    <div id="hint-text"  style="display:none"></div>
+    <div id="hint-text" style="display:none"></div>
     <span id="s-correct" style="display:none">0</span>
-    <span id="s-wrong"   style="display:none">0</span>
-    <span id="s-streak"  style="display:none">0</span>
+    <span id="s-wrong" style="display:none">0</span>
+    <span id="s-streak" style="display:none">0</span>
 
     <!-- MC OVERLAY -->
     <div id="mc-overlay" tabindex="-1">
@@ -463,14 +463,14 @@
 
         function classifySingle(a, b, op) {
             if (op === '+') {
-                if (a === b)                        return 'doubles';
-                if (a + b === 10)                   return 'bonds';
-                if (Math.abs(a - b) <= 2)           return 'near-doubles';
+                if (a === b) return 'doubles';
+                if (a + b === 10) return 'bonds';
+                if (Math.abs(a - b) <= 2) return 'near-doubles';
                 return 'recall';
             } else {
-                if (b === a / 2 && a % 2 === 0)    return 'doubles';
-                if (b + a === 10 || a === 10)       return 'bonds';
-                if (Math.abs(a - 2 * b) <= 2)      return 'near-doubles';
+                if (b === a / 2 && a % 2 === 0) return 'doubles';
+                if (b + a === 10 || a === 10) return 'bonds';
+                if (Math.abs(a - 2 * b) <= 2) return 'near-doubles';
                 return 'recall';
             }
         }
@@ -500,37 +500,37 @@
             [
                 [247, 121], [134, 253], [312, 465], [523, 241], [143, 325],
                 [231, 546], [412, 253], [321, 164], [461, 238], [143, 325],
-                [43, 25],   [67, 31],   [82, 15],   [54, 23],   [74, 25],
+                [43, 25], [67, 31], [82, 15], [54, 23], [74, 25],
             ].forEach(([a, b]) => facts.push({ a, b, op: '+', answer: a + b, strategy: 'partitioning' }));
 
             [
-                [134, 29],  [256, 49],  [367, 19],  [145, 39],  [423, 99],
-                [63, 29],   [47, 19],   [85, 38],   [124, 49],  [236, 99],
-                [345, 29],  [167, 19],  [243, 49],  [312, 98],  [156, 39],
+                [134, 29], [256, 49], [367, 19], [145, 39], [423, 99],
+                [63, 29], [47, 19], [85, 38], [124, 49], [236, 99],
+                [345, 29], [167, 19], [243, 49], [312, 98], [156, 39],
             ].forEach(([a, b]) => facts.push({ a, b, op: '+', answer: a + b, strategy: 'compensating' }));
 
             [
-                [35, 37],   [64, 66],   [123, 127], [245, 249], [43, 45],
-                [78, 80],   [151, 155], [96, 98],   [212, 214], [167, 171],
-                [48, 52],   [99, 101],  [148, 152], [223, 227], [74, 76],
+                [35, 37], [64, 66], [123, 127], [245, 249], [43, 45],
+                [78, 80], [151, 155], [96, 98], [212, 214], [167, 171],
+                [48, 52], [99, 101], [148, 152], [223, 227], [74, 76],
             ].forEach(([a, b]) => facts.push({ a, b, op: '+', answer: a + b, strategy: 'doubling' }));
 
             [
-                [85, 22],   [349, 125], [567, 241], [76, 34],   [98, 45],
-                [467, 234], [789, 356], [654, 321], [87, 43],   [96, 52],
-                [579, 246], [348, 215], [965, 432], [74, 31],   [89, 57],
+                [85, 22], [349, 125], [567, 241], [76, 34], [98, 45],
+                [467, 234], [789, 356], [654, 321], [87, 43], [96, 52],
+                [579, 246], [348, 215], [965, 432], [74, 31], [89, 57],
             ].forEach(([a, b]) => facts.push({ a, b, op: '-', answer: a - b, strategy: 'partitioning' }));
 
             [
-                [322, 39],  [145, 29],  [256, 19],  [134, 48],  [83, 29],
-                [67, 19],   [92, 38],   [214, 99],  [363, 49],  [452, 199],
-                [176, 29],  [345, 38],  [423, 99],  [265, 49],  [183, 29],
+                [322, 39], [145, 29], [256, 19], [134, 48], [83, 29],
+                [67, 19], [92, 38], [214, 99], [363, 49], [452, 199],
+                [176, 29], [345, 38], [423, 99], [265, 49], [183, 29],
             ].forEach(([a, b]) => facts.push({ a, b, op: '-', answer: a - b, strategy: 'compensating' }));
 
             [
-                [240, 123], [180, 91],  [360, 182], [500, 251], [80, 41],
-                [120, 62],  [200, 101], [300, 152], [160, 79],  [400, 203],
-                [280, 141], [140, 69],  [320, 163], [600, 301], [440, 221],
+                [240, 123], [180, 91], [360, 182], [500, 251], [80, 41],
+                [120, 62], [200, 101], [300, 152], [160, 79], [400, 203],
+                [280, 141], [140, 69], [320, 163], [600, 301], [440, 221],
             ].forEach(([a, b]) => facts.push({ a, b, op: '-', answer: a - b, strategy: 'halving' }));
 
             return facts;
@@ -549,14 +549,14 @@
         function buildMCContent(fact) {
             const { a, b, op, answer, strategy } = fact;
             const strategyName = {
-                'doubles':       'Doubles',
-                'bonds':         'Bonds to 10',
-                'near-doubles':  'Near Doubles',
-                'recall':        'Recall',
-                'partitioning':  'Partitioning',
-                'compensating':  'Compensating',
-                'doubling':      'Doubling',
-                'halving':       'Halving'
+                'doubles': 'Doubles',
+                'bonds': 'Bonds to 10',
+                'near-doubles': 'Near Doubles',
+                'recall': 'Recall',
+                'partitioning': 'Partitioning',
+                'compensating': 'Compensating',
+                'doubling': 'Doubling',
+                'halving': 'Halving'
             }[strategy] || strategy;
 
             let rows = [];
@@ -658,9 +658,9 @@
 
             const stepsHTML = rows.map(r => `<div class="mc-step">${r}</div>`).join('');
             return `<div class="mc-strategy-label">${strategyName}</div>
-                    <hr class="mc-fact-divider">
-                    ${stepsHTML}
-                    <div class="mc-step answer">= <strong>${answer}</strong></div>`;
+                        <hr class="mc-fact-divider">
+                        ${stepsHTML}
+                        <div class="mc-step answer">= <strong>${answer}</strong></div>`;
         }
 
         // ── HINT TEXT ──────────────────────────────────────────────────────────
@@ -845,14 +845,14 @@
         document.getElementById('answer-input').addEventListener('keydown', e => { if (e.key === 'Enter') window.submitAnswer(); });
         document.addEventListener('keydown', e => { if (e.key === 'Enter') return; if (mcVisible) dismissMC(); });
         document.getElementById('mc-overlay').addEventListener('click', dismissMC);
-        document.getElementById('submit-btn').addEventListener('click', function() { window.submitAnswer(); });
+        document.getElementById('submit-btn').addEventListener('click', function () { window.submitAnswer(); });
         document.getElementById('restart-btn').addEventListener('click', startFresh);
         document.getElementById('missed-btn').addEventListener('click', drillMissed);
 
         // ── MODE MENU ──────────────────────────────────────────────────────────
 
-        const modeBtn      = document.getElementById('mode-btn');
-        const modeMenu     = document.getElementById('mode-menu');
+        const modeBtn = document.getElementById('mode-btn');
+        const modeMenu = document.getElementById('mode-menu');
         const menuBackdrop = document.getElementById('menu-backdrop');
 
         function openMenu() {
@@ -874,17 +874,17 @@
         // ── VISUAL VIEWPORT LAYOUT ─────────────────────────────────────────────
 
         function fitLayout() {
-            const vv  = window.visualViewport;
+            const vv = window.visualViewport;
             const kbH = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
 
-            const inputRow  = document.getElementById('input-row');
-            const qArea     = document.getElementById('question-area');
+            const inputRow = document.getElementById('input-row');
+            const qArea = document.getElementById('question-area');
             const mcOverlay = document.getElementById('mc-overlay');
-            const inputH    = inputRow.offsetHeight || 76;
-            const clampBot  = kbH + inputH;
+            const inputH = inputRow.offsetHeight || 76;
+            const clampBot = kbH + inputH;
 
-            inputRow.style.bottom  = kbH + 'px';
-            qArea.style.bottom     = clampBot + 'px';
+            inputRow.style.bottom = kbH + 'px';
+            qArea.style.bottom = clampBot + 'px';
             mcOverlay.style.bottom = clampBot + 'px';
         }
 
@@ -896,6 +896,8 @@
 
         startFresh();
     </script>
+    <script src="config.js"></script>
+
     <script src="idle.js"></script>
 </body>
 </html>

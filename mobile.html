@@ -367,10 +367,10 @@
     <!-- MODE DROPDOWN -->
     <div id="menu-backdrop"></div>
     <nav id="mode-menu" role="menu">
-        <a href="mobile.html"          class="mode-item current" role="menuitem"><span class="mode-sym">×</span>Multiply</a>
-        <a href="division-mobile.html" class="mode-item"         role="menuitem"><span class="mode-sym">÷</span>Division</a>
-        <a href="addsubtract-mobile.html" class="mode-item"       role="menuitem"><span class="mode-sym">+</span>Add / Sub</a>
-        <a href="fractions-mobile.html"class="mode-item"         role="menuitem"><span class="mode-sym">½</span>Fractions</a>
+        <a href="mobile.html" class="mode-item current" role="menuitem"><span class="mode-sym">×</span>Multiply</a>
+        <a href="division-mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">÷</span>Division</a>
+        <a href="addsubtract-mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">+</span>Add / Sub</a>
+        <a href="fractions-mobile.html" class="mode-item" role="menuitem"><span class="mode-sym">½</span>Fractions</a>
     </nav>
 
     <!-- PROGRESS HAIRLINE -->
@@ -390,10 +390,10 @@
 
     <!-- Hidden DOM nodes required by shared.js -->
     <div id="timer-wrap" style="display:none"><div id="timer-fill"></div></div>
-    <div id="hint-text"  style="display:none"></div>
+    <div id="hint-text" style="display:none"></div>
     <span id="s-correct" style="display:none">0</span>
-    <span id="s-wrong"   style="display:none">0</span>
-    <span id="s-streak"  style="display:none">0</span>
+    <span id="s-wrong" style="display:none">0</span>
+    <span id="s-streak" style="display:none">0</span>
 
     <!-- MORON CHECKER OVERLAY -->
     <div id="mc-overlay" tabindex="-1">
@@ -488,7 +488,7 @@
                 const wrap = document.getElementById('mc-grid-wrap');
                 if (hl && wrap) {
                     wrap.scrollLeft = hl.offsetLeft - wrap.clientWidth / 2 + hl.offsetWidth / 2;
-                    wrap.scrollTop  = hl.offsetTop  - wrap.clientHeight / 2 + hl.offsetHeight / 2;
+                    wrap.scrollTop = hl.offsetTop - wrap.clientHeight / 2 + hl.offsetHeight / 2;
                 }
             }, 40);
         }
@@ -522,7 +522,7 @@
                     } else if (r === qa || c === qb) {
                         const dark = document.documentElement.classList.contains('dark');
                         td.style.background = dark ? '#1e2228' : 'rgba(245,240,232,0.9)';
-                        td.style.color      = dark ? '#6a6660' : '#9a8060';
+                        td.style.color = dark ? '#6a6660' : '#9a8060';
                     }
                     tr.appendChild(td);
                 }
@@ -575,8 +575,8 @@
             const timeStr = fmtDrillTime(elapsed);
             const t = correct + wrong, pct = t > 0 ? Math.round((correct / t) * 100) : 0;
             document.getElementById('done-title').textContent = pct >= 90 ? 'Excellent.' : pct >= 70 ? 'Good progress.' : 'Keep going.';
-            document.getElementById('done-sub').textContent   = `${correct} correct, ${wrong} missed — ${pct}%`;
-            document.getElementById('done-time').textContent  = timeStr;
+            document.getElementById('done-sub').textContent = `${correct} correct, ${wrong} missed — ${pct}%`;
+            document.getElementById('done-time').textContent = timeStr;
             document.getElementById('missed-btn').style.display = Object.keys(missed).length ? 'block' : 'none';
             const hist = saveDrillResult('history_multiply', pct, timeStr, 'Full');
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
@@ -589,14 +589,14 @@
         document.getElementById('answer-input').addEventListener('keydown', e => { if (e.key === 'Enter') window.submitAnswer(); });
         document.addEventListener('keydown', e => { if (e.key === 'Enter') return; if (mcVisible) dismissMC(); });
         document.getElementById('mc-overlay').addEventListener('click', dismissMC);
-        document.getElementById('submit-btn').addEventListener('click', function() { window.submitAnswer(); });
+        document.getElementById('submit-btn').addEventListener('click', function () { window.submitAnswer(); });
         document.getElementById('restart-btn').addEventListener('click', startFresh);
         document.getElementById('missed-btn').addEventListener('click', drillMissed);
 
         // ── MODE MENU ──────────────────────────────────────────────────────────
 
-        const modeBtn      = document.getElementById('mode-btn');
-        const modeMenu     = document.getElementById('mode-menu');
+        const modeBtn = document.getElementById('mode-btn');
+        const modeMenu = document.getElementById('mode-menu');
         const menuBackdrop = document.getElementById('menu-backdrop');
 
         function openMenu() {
@@ -620,17 +620,17 @@
         // question area filling the remaining space between topbar and input row.
 
         function fitLayout() {
-            const vv  = window.visualViewport;
+            const vv = window.visualViewport;
             const kbH = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
 
-            const inputRow  = document.getElementById('input-row');
-            const qArea     = document.getElementById('question-area');
+            const inputRow = document.getElementById('input-row');
+            const qArea = document.getElementById('question-area');
             const mcOverlay = document.getElementById('mc-overlay');
-            const inputH    = inputRow.offsetHeight || 76;
-            const clampBot  = kbH + inputH;
+            const inputH = inputRow.offsetHeight || 76;
+            const clampBot = kbH + inputH;
 
-            inputRow.style.bottom  = kbH + 'px';
-            qArea.style.bottom     = clampBot + 'px';
+            inputRow.style.bottom = kbH + 'px';
+            qArea.style.bottom = clampBot + 'px';
             // Keep MC overlay within the visible area so the grid is never hidden behind the keyboard
             mcOverlay.style.bottom = clampBot + 'px';
         }
@@ -643,6 +643,8 @@
 
         startFresh();
     </script>
+    <script src="config.js"></script>
+
     <script src="idle.js"></script>
 </body>
 </html>
