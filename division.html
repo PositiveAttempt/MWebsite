@@ -133,6 +133,8 @@
         }
 
         function startFresh() {
+            if (window.resetToStart) window.resetToStart();
+
             drillStart = Date.now();
             let pool = shuffle([...allFacts]);
             if (sessionSize > 0) pool = pool.slice(0, sessionSize);

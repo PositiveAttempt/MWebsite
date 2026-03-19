@@ -588,6 +588,8 @@
         }
 
         function startFresh() {
+            if (window.resetToStart) window.resetToStart();
+
             drillStart = Date.now();
             let pool = shuffle(buildFacts());
             queue = [...pool];

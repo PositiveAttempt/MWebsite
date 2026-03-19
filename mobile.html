@@ -429,6 +429,8 @@
         let mcVisible = false;
 
         function startFresh() {
+            if (window.resetToStart) window.resetToStart();
+
             drillStart = Date.now();
             queue = shuffle([...allFacts]);
             missed = {}; correct = 0; wrong = 0; streak = 0; doneCount = 0; total = queue.length;

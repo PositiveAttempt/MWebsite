@@ -436,6 +436,9 @@
         shields = Math.max(0, shields - amount);
         armour = Math.max(0, armour - overflow);
         lastHitTime = Date.now() / 1000;
+        if (shields <= 0 && armour <= 0) {
+            resetToStart();
+        }
     }
 
     function updateCombat(now, dt) {
@@ -994,12 +997,14 @@
             resetBtn.textContent = '\u21ba';
             resetBtn.title = 'Reset progress';
             resetBtn.addEventListener('click', function () {
+                if (!confirm('Reset all progress?')) return;
                 localStorage.removeItem('idle_money');
                 localStorage.removeItem('idle_missile_unlocked');
                 money = 0;
                 if (moneyEl) moneyEl.textContent = money;
                 secondaryWeapon = null;
                 updateSecondarySlotEl();
+                resetToStart();
             });
             bottomRow.appendChild(resetBtn);
 
@@ -1078,6 +1083,43 @@
         if (mins < 0.1) return '0.0';
         return (correctCount / mins).toFixed(1);
     }
+    function resetToStart() {
+        // clear enemies
+        for (var i = 0; i < enemies.length; i++) {
+            if (enemies[i].el) enemies[i].el.remove();
+        }
+        enemies = [];
+        bullets = [];
+        missiles = [];
+        enemyBullets = [];
+
+        // reset waves
+        waveIndex = 0;
+        waveTimer = 0;
+        waveGapTimer = ENEMY_INITIAL_DELAY;
+
+        // reset stats
+        gen = GEN_MAX;
+        shields = SHIELD_MAX;
+        armour = ARMOUR_MAX;
+        lastHitTime = 0;
+
+        // put ship back on pier
+        flightState = 'grounded';
+        shipEl.src = 'assets/ship.png';
+        burnFrame = 0;
+        burnTimer = 0;
+        ship.x = CW / 2;
+        ship.y = CH * 0.80;
+        ship.vx = 0;
+        ship.vy = 0;
+        ship.worldY = CH * 0.25;
+        correctCount = 0;
+        sessionStart = Date.now();
+    }
+
+    window.resetToStart = function () { if (flightState === 'grounded') return; resetToStart(); };
+
     function takeoff() {
         if (flightState === 'grounded') {
             flightState = 'ignition';

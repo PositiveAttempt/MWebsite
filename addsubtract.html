@@ -539,6 +539,8 @@
         }
 
         function startFresh() {
+            if (window.resetToStart) window.resetToStart();
+
             drillStart = Date.now();
             let pool;
             if (currentMode === 'singles') {
