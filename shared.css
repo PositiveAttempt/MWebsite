@@ -1214,6 +1214,15 @@ html.dark #dark-toggle {
     margin-bottom: 8px;
 }
 
+body.mode-add #question,
+body.mode-sub #question,
+body.mode-mix #question {
+    font-size: 70px;
+    letter-spacing: -2px;
+}
+
+No !important
+
 #hint-text {
     font-size: 13px;
     color: #8a8680;

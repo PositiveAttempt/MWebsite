@@ -49,6 +49,13 @@
     var flightState = 'grounded';
     var ship = { x: 0, y: 0, vx: 0, vy: 0, worldY: 0 };
 
+    // ── pilot state machine ───────────────────────────────────────────────────
+    var pilotState = 'seek';   // 'seek' | 'engage' | 'break'
+    var breakTimer = 0;
+    var breakVx = 0;
+    var breakVy = 0;
+    var BREAK_DURATION = 0.42;
+
 
     // ── generator — energy = bullets ─────────────────────────────────────────
     //   correct answer tops it up, each bullet fired drains it,
@@ -197,6 +204,7 @@
     function killEnemy(e, i) {
         if (e.el) { e.el.remove(); }
         enemies.splice(i, 1);
+        if (pilotState === 'engage') triggerBreak();
     }
 
     // ── create sprite element for a spawned enemy ─────────────────────────────
@@ -249,12 +257,30 @@
     }
 
     // ── steering — 2D vector forces ───────────────────────────────────────────
+    // ── pilot helpers ─────────────────────────────────────────────────────────
+    function engageY(target) {
+        // aggressive when enemy is high up, cautious when it's already past mid
+        return (target && target.y < CH * 0.5) ? CH * 0.68 : CH * 0.75;
+    }
+
+    function triggerBreak() {
+        pilotState = 'break';
+        breakTimer = BREAK_DURATION;
+        // break hard away from the next remaining enemy (or screen centre)
+        var next = enemies.length > 0 ? enemies[0] : null;
+        var awayX = next ? (ship.x - next.x) : (ship.x - CW * 0.5);
+        var awayLen = Math.abs(awayX) + 0.001;
+        breakVx = (awayX / awayLen) * 300;
+        breakVy = -55;  // slight upward kick — feels like pulling back
+    }
+
     function steer(dt) {
         if (flightState === 'grounded' || flightState === 'ignition') return;
 
+        // burn animation (unchanged)
         if (flightState === 'cruising') {
-            var spd = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
-            if (spd > 20) {   // only animate when actually moving
+            var spd0 = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
+            if (spd0 > 20) {
                 burnTimer += dt;
                 if (burnTimer >= BURN_INTERVAL) {
                     burnTimer = 0;
@@ -262,39 +288,72 @@
                     shipEl.src = burnFrame === 0 ? 'assets/ship-cruise.png' : 'assets/ship-cruise2.png';
                 }
             } else {
-                shipEl.src = 'assets/ship-cruise.png';  // settled back to frame 1
+                shipEl.src = 'assets/ship-cruise.png';
                 burnFrame = 0;
             }
         }
-        var fx = 0, fy = 0;
 
+        var fx = 0, fy = 0;
+        var damp = 0.82;
         var target = nearestEnemy();
-        if (target) {
-            var leadTime = 0.7;
-            var predictedX = target.x + Math.sin(target.phase + leadTime * 0.5) * 18 * leadTime;
-            fx += (predictedX - ship.x) * 18.0;
-            fy += (CH * 0.75 - ship.y) * 1.8;
-        } else {
-            // no enemy — drift back toward lower-centre while waiting
-            fx += (CW * 0.5 - ship.x) * 0.9;
-            fy += (CH * 0.75 - ship.y) * 0.9;
+
+        if (pilotState === 'seek') {
+            if (target) {
+                var ey = engageY(target);
+                // snap directly below the target — crisp, purposeful
+                fx += (target.x - ship.x) * 34.0;
+                fy += (ey - ship.y) * 24.0;
+                damp = 0.75;  // low damping → snappy positioning
+                // arrived: lock in and commit
+                if (Math.abs(ship.x - target.x) < 12 && Math.abs(ship.y - ey) < 18) {
+                    pilotState = 'engage';
+                }
+            } else {
+                // no enemy — centre and wait
+                fx += (CW * 0.5 - ship.x) * 9;
+                fy += (CH * 0.78 - ship.y) * 9;
+                damp = 0.80;
+            }
+        } else if (pilotState === 'engage') {
+            if (!target) {
+                pilotState = 'seek';
+            } else {
+                var ey2 = engageY(target);
+                // track enemy X tightly, hold engage Y — settled but alive
+                fx += (target.x - ship.x) * 24.0;
+                fy += (ey2 - ship.y) * 14.0;
+                damp = 0.85;
+
+                // enemy slipped past — break off, don't chase downward
+                if (target.y > ship.y + SHIP_H) {
+                    triggerBreak();
+                }
+            }
+        } else if (pilotState === 'break') {
+            breakTimer -= dt;
+            // impulse fades as break completes — front-loaded punch
+            var bf = Math.max(0, breakTimer / BREAK_DURATION);
+            fx += breakVx * bf * 7;
+            fy += breakVy * bf * 7;
+            damp = 0.78;
+
+            if (breakTimer <= 0) {
+                pilotState = 'seek';
+            }
         }
 
         // canvas boundary forces
         var m = 38 * SCALE;
-        if (ship.x < m) fx += (m - ship.x) * 4;
-        if (ship.x > CW - m) fx += (CW - m - ship.x) * 4;
-        if (ship.y < m) fy += (m - ship.y) * 4;
-        if (ship.y > CH - m) fy += (CH - m - ship.y) * 4;
+        if (ship.x < m) fx += (m - ship.x) * 6;
+        if (ship.x > CW - m) fx += (CW - m - ship.x) * 6;
+        if (ship.y < m) fy += (m - ship.y) * 6;
+        if (ship.y > CH - m) fy += (CH - m - ship.y) * 6;
 
-        // integrate with damping
-        var damp = 0.86;
         ship.vx = (ship.vx + fx * dt) * damp;
         ship.vy = (ship.vy + fy * dt) * damp;
 
-        // speed cap
         var spd = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
-        var maxSpd = 155;
+        var maxSpd = 300;
         if (spd > maxSpd) { ship.vx *= maxSpd / spd; ship.vy *= maxSpd / spd; }
 
         ship.x += ship.vx * dt;
@@ -1109,6 +1168,8 @@
 
         // put ship back on pier
         flightState = 'grounded';
+        pilotState = 'seek';
+        breakTimer = 0;
         shipEl.src = 'assets/ship.png';
         burnFrame = 0;
         burnTimer = 0;

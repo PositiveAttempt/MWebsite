@@ -20,6 +20,7 @@
             margin-bottom: 10px;
         }
 
+
         .mode-btn {
             font-family: 'EB Garamond', serif;
             font-size: 11px;
@@ -132,7 +133,7 @@
         }
     </style>
 </head>
-<body>
+<body class="mode-singles">
 
     <button id="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">☽</button>
 
@@ -503,13 +504,12 @@
         function setMode(mode) {
             window.idleQuestionValue = mode === 'singles' ? 0.1 : 2;
             currentMode = mode;
+            document.body.className = 'mode-' + mode;
             document.querySelectorAll('.mode-btn').forEach(btn =>
                 btn.classList.toggle('active', btn.dataset.mode === mode)
             );
-            const q = { singles: '? + ?', add: '? + ?', sub: '? − ?', mix: '? + ?' };
-            document.getElementById('question').textContent = q[mode] || '? + ?';
-            startFresh();
-        }
+            startFresh();   // ← was missing
+        }   
 
         function updateTimerLabel(val) {
             document.getElementById('mc-timer-label').textContent = val + 's';
