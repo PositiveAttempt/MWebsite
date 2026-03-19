@@ -25,7 +25,7 @@
     var MOBILE = window.innerWidth < 768;
     var SCALE = MOBILE ? 0.5 : 1;
     var suppressTooltips = MOBILE;
-    var drawerOpen = localStorage.getItem('idle_drawer_open') === '1';
+    var drawerOpen = false;  // always start closed — avoids double-press on mobile
 
     var PANEL_W = 216;
     var CANVAS_GAP = 50;
@@ -60,7 +60,6 @@
     var _en = _cfg.enemy || {};
 
     var GEN_MAX = _gen.max !== undefined ? _gen.max : 100;
-    var gen = GEN_MAX;
     var GEN_AWARD = _gen.award !== undefined ? _gen.award : 28;
     var GEN_COST = _gen.shotCost !== undefined ? _gen.shotCost : 1;
     var GEN_IDLE = _gen.idleDrain !== undefined ? _gen.idleDrain : 0.3;
@@ -90,6 +89,7 @@
     var ARMOUR_MAX = _arm.max !== undefined ? _arm.max : 20;
     var shields = SHIELD_MAX;
     var armour = ARMOUR_MAX;
+    var gen = GEN_MAX;
     var SHIELD_REGEN = _sh.regen !== undefined ? _sh.regen : 12;
     var SHIELD_REGEN_GEN_COST = _sh.regenGenCost !== undefined ? _sh.regenGenCost : 0;
     var SHIELD_REGEN_DELAY = _sh.regenDelay !== undefined ? _sh.regenDelay : 0;
@@ -113,10 +113,21 @@
     // ── multiple enemies ──────────────────────────────────────────────────────
     var enemies = [];
     var enemySpawnCount = 0;
-    var MAX_ENEMIES = 3;
     var obstacles = [];
     var lastFireMs = 0;
-    var enemyRespawnTimer = 0;
+
+    // ── wave system ───────────────────────────────────────────────────────────
+    var DEFAULT_WAVES = [
+        { label: 'trickle', duration: 20, gap: 4.0, maxEnemies: 1, enemyHp: 3, enemyVy: 70 },
+        { label: 'swarm', duration: 12, gap: 1.5, maxEnemies: 2, enemyHp: 2, enemyVy: 90 },
+        { label: 'silence', duration: 6, gap: 999, maxEnemies: 0, enemyHp: 3, enemyVy: 70 },
+        { label: 'swarm', duration: 14, gap: 1.0, maxEnemies: 3, enemyHp: 2, enemyVy: 110 },
+        { label: 'heavy', duration: 16, gap: 3.0, maxEnemies: 2, enemyHp: 6, enemyVy: 80 },
+    ];
+    var WAVES = (_cfg.waves && _cfg.waves.length) ? _cfg.waves : DEFAULT_WAVES;
+    var waveIndex = 0;
+    var waveTimer = 0;
+    var waveGapTimer = 0;
 
     var burnFrame = 0;
     var burnTimer = 0;
@@ -198,18 +209,17 @@
     }
 
     // ── level / enemy spawn ───────────────────────────────────────────────────
-    function spawnEnemy() {
-        var isHeavy = (enemySpawnCount % 3 === 2);
-        var hp = isHeavy ? ENEMY_TYPE2_HP : ENEMY_TYPE1_HP;
+    function spawnEnemyWave(hp, vy) {
         var el = createEnemySpriteEl();
         var w = enemyEl.naturalWidth || 16;
         var h = enemyEl.naturalHeight || 16;
+        var baseVy = (vy || 70) + scrollSpeed() * 0.25;
         enemies.push({
             x: CW * 0.2 + Math.random() * CW * 0.6,
             y: -SHIP_H,
-            hp: hp,
-            maxHp: hp,
-            vy: 70 + scrollSpeed() * 0.25,
+            hp: hp || ENEMY_TYPE1_HP,
+            maxHp: hp || ENEMY_TYPE1_HP,
+            vy: baseVy,
             phase: Math.random() * Math.PI * 2,
             flash: 0,
             hw: w * 1.5 * SCALE,
@@ -217,6 +227,11 @@
             el: el,
         });
         enemySpawnCount++;
+    }
+
+    function spawnEnemy() {
+        var wave = WAVES[waveIndex % WAVES.length];
+        spawnEnemyWave(wave.enemyHp, wave.enemyVy);
     }
 
     function spawnLevel() {
@@ -499,12 +514,20 @@
             }
         }
 
-        // spawn new enemies up to MAX_ENEMIES
-        if (enemies.length < MAX_ENEMIES) {
-            enemyRespawnTimer -= dt;
-            if (enemyRespawnTimer <= 0) {
-                spawnEnemy();
-                enemyRespawnTimer = ENEMY_RESET_DELAY + Math.random() * 2;
+        // ── wave driver ───────────────────────────────────────────────────────
+        var wave = WAVES[waveIndex % WAVES.length];
+        waveTimer += dt;
+        if (waveTimer >= wave.duration) {
+            waveTimer = 0;
+            waveGapTimer = 0;
+            waveIndex++;
+            wave = WAVES[waveIndex % WAVES.length];
+        }
+        if (enemies.length < wave.maxEnemies) {
+            waveGapTimer -= dt;
+            if (waveGapTimer <= 0) {
+                spawnEnemyWave(wave.enemyHp, wave.enemyVy);
+                waveGapTimer = wave.gap + Math.random() * (wave.gap * 0.3);
             }
         }
 
@@ -738,7 +761,11 @@
         var weaponSlots = [primaryWeapon, secondaryWeapon, tertiaryWeapon, rearWeapon];
         for (var i = 0; i < weaponSlots.length; i++) {
             var slotEl = makeWeaponSlot(weaponSlots[i], i + 1);
-            if (i === 1) secondarySlotEl = slotEl;
+            if (i === 1) {
+                secondarySlotEl = slotEl;
+                slotEl.addEventListener('click', function () { buyMissile(); });
+                slotEl.style.cursor = 'pointer';
+            }
             weaponsCol.appendChild(slotEl);
         }
 
@@ -807,7 +834,7 @@
             genLbl.textContent = 'GEN';
             mobileGenEl = document.createElement('div');
             mobileGenEl.className = 'idle-topbar-item-val';
-            mobileGenEl.textContent = '0';
+            mobileGenEl.textContent = Math.round(gen);
             genItem.appendChild(genLbl);
             genItem.appendChild(mobileGenEl);
             topbarStats.appendChild(genItem);
@@ -853,7 +880,6 @@
             drawerToggleBtn.addEventListener('click', function () {
                 drawerOpen = !drawerOpen;
                 if (drawerEl) drawerEl.style.transform = drawerOpen ? 'translateX(0)' : 'translateX(100%)';
-                localStorage.setItem('idle_drawer_open', drawerOpen ? '1' : '0');
             });
             if (topbarDark && topbarDark.parentNode) {
                 topbarDark.parentNode.insertBefore(drawerToggleBtn, topbarDark);
@@ -894,7 +920,6 @@
                 if (!open && drawerEl) {
                     drawerOpen = false;
                     drawerEl.style.transform = 'translateX(100%)';
-                    localStorage.setItem('idle_drawer_open', '0');
                 }
                 toggleEl.textContent = open ? '\u25c9' : '\u25cf';
                 localStorage.setItem('idle_panel_open', open ? '1' : '0');
@@ -1128,7 +1153,7 @@
             if (enemies[i].el) enemies[i].el.remove();
         }
         enemies = [];
-        enemyRespawnTimer = ENEMY_INITIAL_DELAY;
+        waveGapTimer = ENEMY_INITIAL_DELAY;
         ship.worldY = CH * 0.25;
         updateUI();
         lastRaf = performance.now();

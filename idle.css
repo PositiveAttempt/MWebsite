@@ -148,7 +148,7 @@
         border-color: #8a8680;
     }
 
-/* ── BOTTOM ROW (lock + reset) ── */
+/* ── BOTTOM ROW (lock + reset) — desktop only, JS never builds on mobile ── */
 #idle-bottom-row {
     display: flex;
     align-items: center;
@@ -210,6 +210,23 @@
 
     #idle-ship.on {
         opacity: 0.95;
+    }
+
+#idle-enemy, .idle-enemy {
+    position: fixed;
+    pointer-events: none;
+    z-index: 2;
+    width: 48px;
+    height: auto;
+    opacity: 0;
+    transition: opacity 1.4s ease;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    transform-origin: center center;
+}
+
+    #idle-enemy.on, .idle-enemy.on {
+        opacity: 0.85;
     }
 
 /* ── FLOATS ── */
@@ -286,11 +303,11 @@
     animation: idle-smoke 2.6s cubic-bezier(0.25,0.1,0.35,1) forwards;
 }
 
-/* ── MOBILE TOPBAR STATS ── */
+/* ── MOBILE TOPBAR STATS — JS never builds these on desktop ── */
 #idle-topbar-stats {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex: 1;
     justify-content: center;
 }
@@ -315,6 +332,30 @@
     font-family: "EB Garamond","Times New Roman",serif;
     color: #aaa69e;
     min-width: 24px;
+}
+
+.idle-topbar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.idle-topbar-item-label {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: #aaa69e;
+    font-family: "EB Garamond","Times New Roman",serif;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.idle-topbar-item-val {
+    font-size: 11px;
+    font-family: "EB Garamond","Times New Roman",serif;
+    color: #aaa69e;
+    letter-spacing: .08em;
+    line-height: 1;
 }
 
 /* ── LOADOUT ── */
@@ -398,6 +439,60 @@
     display: none;
 }
 
+/* ── MOBILE DRAWER ── */
+#idle-drawer-toggle {
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-size: 16px;
+    color: #aaa69e;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1;
+    margin-right: 6px;
+}
+
+#idle-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 160px;
+    background: rgba(250,249,247,0.82);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-left: 0.5px solid #c8c4bc;
+    transform: translateX(100%);
+    transition: transform .26s ease;
+    z-index: 260;
+    display: flex;
+    flex-direction: column;
+    padding: calc(44px + 0.6rem) 1rem 1.5rem;
+    font-family: "EB Garamond","Times New Roman",serif;
+    color: #1a1916;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+    #idle-drawer .idle-drawer-shipbox {
+        flex-shrink: 0;
+        flex: none;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.6rem;
+    }
+
+    #idle-drawer #idle-loadout-row #idle-ship-diagram {
+        display: none;
+    }
+
+    #idle-drawer #idle-loadout-row {
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
 /* ── MOBILE SIZES ── */
 @media (max-width: 767px) {
     #idle-panel {
@@ -408,8 +503,7 @@
         width: 24px;
     }
 
-    #idle-enemy,
-    .idle-enemy {
+    #idle-enemy, .idle-enemy {
         width: 24px;
     }
 }
@@ -507,6 +601,11 @@ html.dark #idle-topbar-money {
     color: #6a6660;
 }
 
+html.dark .idle-topbar-item-label,
+html.dark .idle-topbar-item-val {
+    color: #6a6660;
+}
+
 html.dark #idle-ship-diagram {
     border-color: #2e3038;
 }
@@ -535,44 +634,32 @@ html.dark #idle-slot-tooltip {
     color: #c8c4bc;
 }
 
+html.dark #idle-drawer-toggle {
+    color: #6a6660;
+}
+
+html.dark #idle-drawer {
+    background: rgba(13,15,18,0.85);
+    border-left-color: #252830;
+    color: #c8c4bc;
+}
+
 /* ══════════════════════════════════════════════════════════════════════════════
    MINIMAL MODE — body.idle-minimal
    Toggled by idle.js setVisible() when the canvas panel opens or locks.
-   Strips surrounding chrome so the shmup backdrop fills the page.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 body.idle-minimal {
     background: transparent;
 }
 
-    /* Hide chrome */
-    body.idle-minimal #dark-toggle {
-        display: visible;
-    }
-
+    /* ── Shared: hide chrome on both mobile and desktop ── */
     body.idle-minimal .page-footer {
         display: none;
     }
 
-    body.idle-minimal .settings-row {
-        position: fixed;
-        bottom: 2.2rem;
-        left: 0rem;
-        background: transparent;
-        border: none;
-        margin: 25px;
-        padding: 0rem;
-        width: auto;
-        gap: 0.5rem;
-    }
-
-    body.idle-minimal .timer-bar-wrap {
-        position: fixed;
-        bottom: calc(-50vh + 13rem);
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 420px;
+    body.idle-minimal .progress-bar-wrap {
+        display: visible;
     }
 
     body.idle-minimal .hint {
@@ -587,7 +674,57 @@ body.idle-minimal {
         display: none;
     }
 
-    /* Header — hide title/subtitle/divider line, float nav to top-left */
+    body.idle-minimal .stats-row {
+        border: none;
+        background: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    body.idle-minimal .stat {
+        border: none;
+    }
+
+    body.idle-minimal .card {
+        border: none;
+        background: transparent !important;
+        padding-top: 1.5rem;
+        padding-bottom: 0.8rem;
+    }
+
+    /* ── Mobile: hide elements that desktop repositions instead ── */
+    body.idle-minimal .settings-row {
+        display: none;
+    }
+
+    body.idle-minimal .timer-bar-wrap {
+        display: none;
+    }
+
+/* ── Desktop: reposition elements rather than hiding them ── */
+@media (min-width: 768px) {
+    body.idle-minimal .settings-row {
+        display: flex;
+        position: fixed;
+        bottom: 2.2rem;
+        left: 0;
+        background: transparent;
+        border: none;
+        margin: 25px;
+        padding: 0;
+        width: auto;
+        gap: 0.5rem;
+    }
+
+    body.idle-minimal .timer-bar-wrap {
+        display: block;
+        position: fixed;
+        bottom: calc(-50vh + 13rem);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 420px;
+    }
+
     body.idle-minimal .header {
         border-bottom: none;
         padding: 0;
@@ -618,25 +755,6 @@ body.idle-minimal {
             display: none;
         }
 
-    /* Stats row — keep streak only, strip all borders */
-    body.idle-minimal .stats-row {
-        border: none;
-        background: transparent;
-        margin-bottom: 0.5rem;
-    }
-
-    body.idle-minimal .stat {
-        border: none;
-    }
-
-    /* Card — transparent, borderless */
-    body.idle-minimal .card {
-        border: none;
-        background: transparent !important;
-        padding-top: 1.5rem;
-        padding-bottom: 0.8rem;
-    }
-
     body.idle-minimal .input-row {
         position: fixed;
         bottom: calc(-50vh + 10rem);
@@ -647,7 +765,6 @@ body.idle-minimal {
         max-width: 420px;
     }
 
-    /* Question — vertically center in the remaining space */
     body.idle-minimal #drill-screen {
         position: fixed;
         top: 50%;
@@ -655,22 +772,4 @@ body.idle-minimal {
         transform: translate(-50%, -50%);
         margin: 0;
     }
-
-#idle-enemy,
-.idle-enemy {
-    position: fixed;
-    pointer-events: none;
-    z-index: 2;
-    width: 48px;
-    height: auto;
-    opacity: 0;
-    transition: opacity 1.4s ease;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-    transform-origin: center center;
 }
-
-    #idle-enemy.on,
-    .idle-enemy.on {
-        opacity: 0.85;
-    }
