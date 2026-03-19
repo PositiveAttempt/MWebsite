@@ -509,11 +509,18 @@
         function setMode(mode) {
             window.idleQuestionValue = mode === 'singles' ? 0.1 : 2;
             currentMode = mode;
-            document.body.classList.remove('mode-singles', 'mode-add', 'mode-sub', 'mode-mix');
-            document.body.classList.add('mode-' + mode);
             document.querySelectorAll('.mode-btn').forEach(btn =>
                 btn.classList.toggle('active', btn.dataset.mode === mode)
             );
+            const q = { singles: '? + ?', add: '? + ?', sub: '? − ?', mix: '? + ?' };
+            document.getElementById('question').textContent = q[mode] || '? + ?';
+
+            // ── auto-adjust hint timer per mode ──
+            const defaultSecs = mode === 'singles' ? 5 : 12;
+            mcDur = defaultSecs * 1000;
+            document.getElementById('mc-timer-range').value = defaultSecs;
+            document.getElementById('mc-timer-label').textContent = defaultSecs + 's';
+
             startFresh();
         }
         function updateTimerLabel(val) {

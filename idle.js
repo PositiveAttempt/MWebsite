@@ -642,12 +642,13 @@
         // missiles
         for (var i = 0; i < missiles.length; i++) {
             var m = missiles[i];
-
             for (var t = 0; t < m.trail.length; t++) {
                 var tf = 1 - (m.trail[t].age / 0.35);
                 ctx.globalAlpha = tf * (m.phase === 'lock' ? 0.55 : 0.18);
                 var ts = (m.phase === 'lock' ? 2.5 : 1.5) * tf * SCALE;
                 ctx.fillStyle = dark ? '#ffffff' : '#1a1916';
+                ctx.beginPath();
+                ctx.arc(m.trail[t].x, m.trail[t].y, ts, 0, Math.PI * 2);
                 ctx.fill();
             }
             ctx.globalAlpha = 1;
