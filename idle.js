@@ -628,7 +628,7 @@
         var dark = document.documentElement.classList.contains('dark');
 
         // bullets — thin vertical streaks
-        ctx.fillStyle = dark ? 'rgba(255,255,255,1)' : 'rgba(26,25,22,1)';
+        ctx.fillStyle = dark ? 'rgba(255,0,255,1)' : 'rgba(26,25,22,1)';
         for (var i = 0; i < bullets.length; i++) {
             ctx.fillRect(bullets[i].x - 2 * SCALE, bullets[i].y - 7 * SCALE, 4 * SCALE, 12 * SCALE);
         }
