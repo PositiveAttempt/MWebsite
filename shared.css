@@ -904,6 +904,8 @@ html.dark .lb-panel-row.new-best {
     .restart-btn, .missed-only-btn {
         text-align: center;
     }
+
+
 }
 
 /* ── DESKTOP: DARK MODE ── */
@@ -1202,6 +1204,14 @@ html.dark #dark-toggle {
         height: 3px;
         top: 76px;
     }
+
+    #prog-wrong {
+        height: 100%;
+        width: 0%;
+        background: #9b2020;
+        transition: width .4s ease;
+    }
+
     #prog-fill {
         background: #1a1916;
     }

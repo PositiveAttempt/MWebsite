@@ -15,7 +15,7 @@
     // ─────────────────────────────────────────────────────────────────────────
 
     var panelEl, toggleEl, spmEl, genBarEl, armourBarEl, lockBtn, shipEl, enemyEl, moneyEl, canvasEl, ctx, secondarySlotEl;
-    var mobileGenEl, mobileShieldsEl, mobileProgFill, drawerEl, drawerShipEl;
+    var mobileGenEl, mobileShieldsEl, drawerEl, drawerShipEl;
 
     var correctCount = 0;
     var sessionStart = Date.now();
@@ -730,12 +730,7 @@
             updateSecondarySlotEl();
             if (MOBILE) {
                 if (mobileGenEl) mobileGenEl.textContent = Math.round(gen);
-                if (mobileShieldsEl) mobileShieldsEl.textContent = Math.round(shields);
-                if (mobileProgFill) {
-                    var _dc = typeof doneCount !== 'undefined' ? doneCount : 0;
-                    var _ql = typeof queue !== 'undefined' && queue ? queue.length : 0;
-                    mobileProgFill.style.width = (_dc + _ql > 0 ? (_dc / (_dc + _ql)) * 100 : 0) + '%';
-                }
+                if (mobileShieldsEl) mobileShieldsEl.textContent = Math.round(shields)
                 if (drawerShipEl) drawerShipEl.src = shipEl.src;
             }
         }
