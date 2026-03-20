@@ -580,7 +580,7 @@
             document.getElementById('done-sub').textContent = `${correct} correct, ${wrong} missed — ${pct}%`;
             document.getElementById('done-time').textContent = timeStr;
             document.getElementById('missed-btn').style.display = Object.keys(missed).length ? 'block' : 'none';
-            const hist = saveDrillResult('history_multiply', pct, timeStr, 'Full');
+            const hist = saveDrillResult('history_multiply', 'history_multiply', pct, timeStr, 'Full');
             document.getElementById('done-history').innerHTML = renderDrillHistory(hist);
             document.getElementById('done-screen').classList.add('visible');
         }

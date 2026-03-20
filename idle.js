@@ -929,7 +929,6 @@
             mobileProgFill = document.createElement('div');
             mobileProgFill.style.cssText = 'height:100%;width:0%;background:#c8c4bc;transition:width .3s ease';
             progTrack.appendChild(mobileProgFill);
-            topbarStats.appendChild(progTrack);
 
             // Money — keep as-is
             moneyEl = document.createElement('div');
@@ -940,6 +939,7 @@
             var topbarDark = document.getElementById('topbar-dark');
             if (topbarDark && topbarDark.parentNode) {
                 topbarDark.parentNode.insertBefore(topbarStats, topbarDark);
+                topbarDark.parentNode.insertBefore(progTrack, topbarDark);
             }
 
             // ── Mobile: drawer toggle (before dark toggle) ─────────────────────
