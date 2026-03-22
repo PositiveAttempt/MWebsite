@@ -158,6 +158,41 @@ function renderDrillHistory({ hist, lb, isNewBest }) {
     return renderArcadePanels(hist, lb, isNewBest);
 }
 
+// ── WEAKNESS TRACKING ────────────────────────────────────────────────────────
+
+function recordWeakness(factKey, isWrong) {
+    let data = {};
+    try { data = JSON.parse(localStorage.getItem('weaknesses') || '{}'); } catch (e) {}
+    if (!data[factKey]) data[factKey] = { attempts: 0, wrong: 0 };
+    data[factKey].attempts++;
+    if (isWrong) data[factKey].wrong++;
+    try { localStorage.setItem('weaknesses', JSON.stringify(data)); } catch (e) {}
+}
+
+function renderWeaknessPanel() {
+    let data = {};
+    try { data = JSON.parse(localStorage.getItem('weaknesses') || '{}'); } catch (e) {}
+    const qualified = Object.entries(data)
+        .filter(([, v]) => v.attempts >= 3)
+        .map(([k, v]) => ({ key: k, ratio: v.wrong / v.attempts, wrong: v.wrong, attempts: v.attempts }))
+        .sort((a, b) => b.ratio - a.ratio)
+        .slice(0, 8);
+    if (!qualified.length) return '';
+    const rows = qualified.map(({ key, wrong, attempts }) => {
+        const label = key.includes('/')
+            ? key.replace('/', ' ÷ ')
+            : key.replace('x', ' × ');
+        return `<div class="lb-panel-row">
+            <span style="flex:1">${label}</span>
+            <span style="font-size:11px;color:#9a8060;letter-spacing:.04em">${wrong}/${attempts}</span>
+        </div>`;
+    }).join('');
+    return `<div class="lb-panel" style="margin-top:1rem;grid-column:1/-1">
+        <div class="lb-panel-label">Weaknesses</div>
+        ${rows}
+    </div>`;
+}
+
 // ── DARK MODE ─────────────────────────────────────────────────────────────────
 
 function toggleDark() {
@@ -207,7 +242,7 @@ function initLeaderboardShortcut(baseKeyOrFn, sessionKeyOrFn) {
         try { lb = JSON.parse(localStorage.getItem(lbKey) || '[]'); } catch (e) { }
 
         const body = document.getElementById('lb-shortcut-body');
-        body.innerHTML = renderArcadePanels(hist, lb, false);
+        body.innerHTML = renderArcadePanels(hist, lb, false) + renderWeaknessPanel();
 
         // dark mode
         const dark = document.documentElement.classList.contains('dark');

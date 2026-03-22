@@ -273,6 +273,7 @@
             if (isNaN(val)) return;
             const ans = current[0] * current[1];
             const key = current.join('×');
+            const wKey = current[0] + 'x' + current[1];
 
             if (val === ans) {
                 inp.className = 'answer-input correct';
@@ -281,6 +282,7 @@
                 correct++; streak++; doneCount++;
                 checkLeafState();
                 if (missed[key]) { missed[key].count--; if (missed[key].count <= 0) delete missed[key]; }
+                recordWeakness(wKey, false);
                 updateStats();
                 setTimeout(nextQuestion, 600);
             } else {
@@ -290,6 +292,7 @@
                 wrong++; streak = 0;
                 if (!missed[key]) missed[key] = { fact: current, count: 0 };
                 missed[key].count++;
+                recordWeakness(wKey, true);
                 queue.unshift(current);
                 updateStats();
                 showMC();
